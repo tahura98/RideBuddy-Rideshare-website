@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ride details – RideBuddy</title>
+  <style>
+    :root {
+      --bg: #020617;
+      --card-bg: #020617;
+      --muted: #9ca3af;
+      --accent: #2f80ed;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #111827 0, #020617 45%, #000 100%);
+      color: #e5e7eb;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 7vw;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-mark {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background: #fff;
+      color: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .brand-text {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 14px;
+      color: #9ca3af;
+    }
+
+    nav a {
+      color: #9ca3af;
+      text-decoration: none;
+    }
+
+    nav a:hover {
+      color: #e5e7eb;
+    }
+
+    .btn-nav {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: transparent;
+      color: #e5e7eb;
+      padding: 6px 12px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    main {
+      flex: 1;
+      padding: 28px 7vw 40px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .card {
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 20px;
+      padding: 22px 20px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.85);
+      width: 100%;
+      max-width: 720px;
+    }
+
+    .title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .route {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .badge {
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(56, 189, 248, 0.8);
+      font-size: 11px;
+      color: #bfdbfe;
+    }
+
+    .meta {
+      font-size: 13px;
+      color: #9ca3af;
+      margin-bottom: 12px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 8px;
+      margin-bottom: 14px;
+    }
+
+    .stat {
+      font-size: 13px;
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 14px;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      padding: 10px 12px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: #9ca3af;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 3px;
+    }
+
+    .stat-value {
+      font-size: 13px;
+    }
+
+    .note {
+      font-size: 13px;
+      color: #cbd5f5;
+      margin-top: 4px;
+    }
+
+    .buttons {
+      margin-top: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .btn-primary {
+      padding: 9px 16px;
+      border-radius: 999px;
+      border: none;
+      background: #f9fafb;
+      color: #020617;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-secondary {
+      padding: 9px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: transparent;
+      color: #e5e7eb;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .helper-text {
+      font-size: 11px;
+      color: #9ca3af;
+      margin-top: 6px;
+    }
+
+    .story-section {
+      margin-top: 20px;
+    }
+
+    .story-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .story-list {
+      font-size: 12px;
+      color: #cbd5f5;
+      border-radius: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      padding: 8px 10px;
+      max-height: 160px;
+      overflow-y: auto;
+    }
+
+    .story-item {
+      margin-bottom: 4px;
+    }
+
+    .story-item span {
+      color: #9ca3af;
+    }
+
+    footer {
+      font-size: 11px;
+      padding: 12px 7vw 16px;
+      color: #6b7280;
+      border-top: 1px solid rgba(15, 23, 42, 0.8);
+    }
+
+    @media (max-width: 700px) {
+      header {
+        padding: 0 16px;
+      }
+      main {
+        padding: 24px 16px 32px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="brand-mark">RB</div>
+      <div class="brand-text">RideBuddy</div>
+    </div>
+    <nav>
+      <a href="home.html">Back</a>
+      <a href="profile.html">Profile</a>
+      <button class="btn-nav" id="logoutBtn" type="button">Log out</button>
+    </nav>
+  </header>
+
+  <main>
+    <div class="card" id="detailsCard">
+      <!-- JS will fill this -->
+    </div>
+  </main>
+
+  <footer>RideBuddy – Ride details (connected to JSON backend).</footer>
+
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      // 1) Auth guard
+      if (!isLoggedIn()) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      const currentUser = getCurrentUser();
+      if (!currentUser) {
+        logoutUser();
+        window.location.href = "login.html";
+        return;
+      }
+
+      document.getElementById("logoutBtn").addEventListener("click", function () {
+        logoutUser();
+        window.location.href = "index.html";
+      });
+
+      const card = document.getElementById("detailsCard");
+      const rawSelected = localStorage.getItem("rb_selected_ride");
+
+      if (!rawSelected) {
+        card.innerHTML = `
+          <div style="font-size:16px;font-weight:600;margin-bottom:8px;">No ride selected</div>
+          <div class="meta">Please go back to the Find a ride page and choose a ride first.</div>
+          <button class="btn-secondary" type="button" onclick="window.location.href='find-ride.html'">
+            ← Back to search
+          </button>
+        `;
+        return;
+      }
+
+      let selectedRide;
+      try {
+        selectedRide = JSON.parse(rawSelected);
+      } catch (e) {
+        console.error("Failed to parse rb_selected_ride", e);
+        card.innerHTML = `
+          <div style="font-size:16px;font-weight:600;margin-bottom:8px;">Error loading ride</div>
+          <div class="meta">Something went wrong while loading this ride.</div>
+          <button class="btn-secondary" type="button" onclick="window.location.href='find-ride.html'">
+            ← Back to search
+          </button>
+        `;
+        return;
+      }
+
+      // 2) Helper: load all rides
+      function loadAllRides() {
+        const raw = localStorage.getItem("rb_rides");
+        if (!raw) return [];
+        try {
+          return JSON.parse(raw);
+        } catch (e) {
+          console.error("Failed to parse rb_rides", e);
+          return [];
+        }
+      }
+
+      // 3) Helper: story key
+      function getStoryKey(ride) {
+        if (!ride || ride.id == null) return null;
+        return "rb_ride_story_" + ride.id;
+      }
+
+      function loadRideStory(ride) {
+        const key = getStoryKey(ride);
+        if (!key) return [];
+        const raw = localStorage.getItem(key);
+        if (!raw) return [];
+        try {
+          return JSON.parse(raw);
+        } catch (e) {
+          console.error("Failed to parse ride story", e);
+          return [];
+        }
+      }
+
+      function saveRideStory(ride, story) {
+        const key = getStoryKey(ride);
+        if (!key) return;
+        localStorage.setItem(key, JSON.stringify(story));
+      }
+
+      function addStoryEvent(ride, message) {
+        const key = getStoryKey(ride);
+        if (!key) return; // demo seed ride without id
+        const story = loadRideStory(ride);
+        const event = {
+          at: new Date().toLocaleString(),
+          userId: currentUser.id,
+          userName: currentUser.name,
+          message: message
+        };
+        story.push(event);
+        saveRideStory(ride, story);
+        return story;
+      }
+
+      function renderStory(ride) {
+        const storyContainer = document.getElementById("rideStoryList");
+        const noStoryText = document.getElementById("rideStoryEmpty");
+
+        const key = getStoryKey(ride);
+        if (!key) {
+          // seeded demo ride
+          noStoryText.textContent = "Ride story is not available for static demo rides.";
+          storyContainer.innerHTML = "";
+          return;
+        }
+
+        const story = loadRideStory(ride);
+        if (!story.length) {
+          noStoryText.textContent = "No events yet. Actions like posting, requesting, or closing will appear here.";
+          storyContainer.innerHTML = "";
+          return;
+        }
+
+        noStoryText.textContent = "";
+        storyContainer.innerHTML = "";
+        story.forEach(ev => {
+          const div = document.createElement("div");
+          div.className = "story-item";
+          div.innerHTML = `<span>[${ev.at}]</span> ${ev.message}`;
+          storyContainer.appendChild(div);
+        });
+      }
+
+      // 4) Latest ride data rb_rides থেকে নেওয়া (যদি id match পায়)
+      let rides = loadAllRides();
+      let ride = selectedRide;
+      if (selectedRide.id != null) {
+        const found = rides.find(r => r.id === selectedRide.id);
+        if (found) {
+          ride = found;
+        }
+      }
+
+      const isDriver = ride.driver_id === currentUser.id;
+
+      const from = ride.from_location || ride.from || "Unknown start";
+      const to = ride.to_location || ride.to || "Unknown destination";
+      const dateText = ride.date || "Unknown date";
+      const timeText = ride.time || "Time not set";
+      const driver = ride.driver_name || "Unknown driver";
+      const status = ride.status || "Active";
+
+      const seatsNumber = (typeof ride.available_seats === "number")
+        ? ride.available_seats
+        : null;
+
+      const seatsText = seatsNumber != null
+        ? seatsNumber + " seat(s)"
+        : "2";
+
+      const fareText = ride.fare_per_seat != null
+        ? "৳40" + ride.fare_per_seat + " per seat"
+        : "৳";
+
+      const pref = ride.passenger_preference || ride.driver_preference || "any";
+      let prefText = "Any passenger";
+      if (pref === "female_only") prefText = "Female passengers only";
+      else if (pref === "female_pref") prefText = "Female preferred";
+
+      const noteText = ride.note || "No additional notes from driver.";
+
+      card.innerHTML = `
+        <div class="title-row">
+          <div class="route">${from} → ${to}</div>
+          <div class="badge" id="statusBadge">${status}</div>
+        </div>
+        <div class="meta">
+          ${dateText} · ${timeText}<br/>
+          Driver: <strong>${driver}</strong>
+        </div>
+
+        <div class="grid">
+          <div class="stat">
+            <div class="stat-label">Fare</div>
+            <div class="stat-value" id="fareValue">${fareText}</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Seats available</div>
+            <div class="stat-value" id="seatValue">${seatsText}</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Passenger preference</div>
+            <div class="stat-value">${prefText}</div>
+          </div>
+        </div>
+
+        <div class="stat">
+          <div class="stat-label">Driver note</div>
+          <div class="note">${noteText}</div>
+        </div>
+
+        <div class="buttons" id="buttonsContainer">
+          <!-- buttons will be attached via JS -->
+        </div>
+        <div class="helper-text" id="helperText"></div>
+
+        <div class="story-section">
+          <div class="story-title">Ride story (demo log)</div>
+          <div id="rideStoryEmpty" class="helper-text" style="margin-bottom:4px;"></div>
+          <div class="story-list" id="rideStoryList"></div>
+        </div>
+      `;
+
+      const buttonsContainer = document.getElementById("buttonsContainer");
+      const helperTextEl = document.getElementById("helperText");
+      const seatValueEl = document.getElementById("seatValue");
+      const statusBadgeEl = document.getElementById("statusBadge");
+
+      if (ride.id != null) {
+        const existingStory = loadRideStory(ride);
+        if (!existingStory.length) {
+          const createdMsg = `Ride created by ${ride.driver_name || "driver"} for ${dateText} at ${timeText}.`;
+          addStoryEvent(ride, createdMsg);
+        }
+      }
+
+      if (isDriver) {
+        // Driver view
+        const closeBtn = document.createElement("button");
+        closeBtn.type = "button";
+        closeBtn.className = "btn-primary";
+        closeBtn.textContent = "Close this ride";
+
+        const backBtn = document.createElement("button");
+        backBtn.type = "button";
+        backBtn.className = "btn-secondary";
+        backBtn.textContent = "← Back to search";
+        backBtn.addEventListener("click", () => {
+          window.location.href = "find-ride.html";
+        });
+
+        buttonsContainer.appendChild(closeBtn);
+        buttonsContainer.appendChild(backBtn);
+
+        helperTextEl.textContent =
+          "You are the driver of this ride. Closing the ride will mark it as closed for all passengers and will be logged in the ride story.";
+
+        closeBtn.addEventListener("click", function () {
+          rides = loadAllRides();
+          if (!rides.length || ride.id == null) {
+            alert("Cannot update this ride in demo data.");
+            return;
+          }
+
+          const updatedRides = rides.map(r => {
+            if (r.id === ride.id) {
+              return { ...r, status: "Closed" };
+            }
+            return r;
+          });
+
+          localStorage.setItem("rb_rides", JSON.stringify(updatedRides));
+
+          // UI update
+          statusBadgeEl.textContent = "Closed";
+          helperTextEl.textContent =
+            "Ride is now closed. Passengers will see it as closed in search.";
+          alert("Ride closed successfully.");
+
+          // Story log
+          const msg = `Ride closed by driver ${currentUser.name}.`;
+          addStoryEvent(ride, msg);
+          renderStory(ride);
+        });
+      } else {
+        // Passenger view
+        const requestBtn = document.createElement("button");
+        requestBtn.type = "button";
+        requestBtn.className = "btn-primary";
+        requestBtn.id = "requestBtn";
+        requestBtn.textContent = "Request this ride";
+
+        const backBtn = document.createElement("button");
+        backBtn.type = "button";
+        backBtn.className = "btn-secondary";
+        backBtn.textContent = "← Back to search";
+        backBtn.addEventListener("click", () => {
+          window.location.href = "find-ride.html";
+        });
+
+        buttonsContainer.appendChild(requestBtn);
+        buttonsContainer.appendChild(backBtn);
+
+        helperTextEl.textContent =
+          "Requesting this ride will reduce the available seats in the demo backend and add an event in the ride story.";
+
+        // condition check
+        if (ride.id == null) {
+          requestBtn.disabled = true;
+          helperTextEl.textContent =
+            "This is a static demo ride, requests are disabled.";
+        } else if (status.toLowerCase() === "closed") {
+          requestBtn.disabled = true;
+          helperTextEl.textContent =
+            "This ride is closed. You cannot request it.";
+        } else if (seatsNumber !== null && seatsNumber <= 0) {
+          requestBtn.disabled = true;
+          helperTextEl.textContent = "No seats left on this ride.";
+        }
+
+        if (ride.driver_id === currentUser.id) {
+          requestBtn.disabled = true;
+          helperTextEl.textContent =
+            "You are the driver of this ride. You cannot request your own ride.";
+        }
+
+        requestBtn.addEventListener("click", function () {
+          rides = loadAllRides();
+          if (!rides.length || ride.id == null) {
+            alert("Cannot request this ride in demo data.");
+            return;
+          }
+
+          const target = rides.find(r => r.id === ride.id);
+          if (!target) {
+            alert("Ride not found in backend.");
+            return;
+          }
+
+          if (target.driver_id === currentUser.id) {
+            alert("You cannot request your own ride.");
+            return;
+          }
+
+          if (target.status && target.status.toLowerCase() === "closed") {
+            alert("This ride is already closed.");
+            return;
+          }
+
+          if (
+            typeof target.available_seats !== "number" ||
+            target.available_seats <= 0
+          ) {
+            alert("No seats left on this ride.");
+            return;
+          }
+
+          const updatedRides = rides.map(r => {
+            if (r.id === target.id) {
+              return { ...r, available_seats: r.available_seats - 1 };
+            }
+            return r;
+          });
+
+          localStorage.setItem("rb_rides", JSON.stringify(updatedRides));
+
+          const newSeats = target.available_seats - 1;
+          seatValueEl.textContent = newSeats + " seat(s)";
+          helperTextEl.textContent =
+            "Your request has been recorded in the demo backend (seats reduced and story updated).";
+          alert("Ride requested successfully (demo).");
+
+          const updatedSelected = { ...ride, available_seats: newSeats };
+          localStorage.setItem(
+            "rb_selected_ride",
+            JSON.stringify(updatedSelected)
+          );
+
+          if (newSeats <= 0) {
+            requestBtn.disabled = true;
+          }
+
+          const msg = `Seat requested by ${currentUser.name}. Remaining seats: ${newSeats}.`;
+          addStoryEvent(ride, msg);
+          renderStory(ride);
+        });
+      }
+
+      renderStory(ride);
+    });
+  </script>
+</body>
+</html>

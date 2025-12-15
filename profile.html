@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile – RideBuddy</title>
+  <style>
+    :root {
+      --bg: #020617;
+      --card-bg: #020617;
+      --muted: #9ca3af;
+      --accent: #2f80ed;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #111827 0, #020617 45%, #000 100%);
+      color: #e5e7eb;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 7vw;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-mark {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background: #fff;
+      color: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .brand-text {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 14px;
+      color: #9ca3af;
+    }
+
+    nav a {
+      color: #9ca3af;
+      text-decoration: none;
+    }
+
+    nav a:hover {
+      color: #e5e7eb;
+    }
+
+    .btn-nav {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: transparent;
+      color: #e5e7eb;
+      padding: 6px 12px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    main {
+      flex: 1;
+      padding: 28px 7vw 40px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(0, 1.5fr);
+      gap: 24px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 20px;
+      padding: 22px 20px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.85);
+    }
+
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    .avatar-large {
+      width: 56px;
+      height: 56px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #2f80ed, #60a5fa);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .badge {
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(52, 211, 153, 0.8);
+      font-size: 11px;
+      color: #bbf7d0;
+    }
+
+    .meta {
+      font-size: 13px;
+      color: #9ca3af;
+      margin-top: 4px;
+    }
+
+    .btn-main {
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: none;
+      background: #f9fafb;
+      color: #020617;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-right: 6px;
+    }
+
+    .btn-secondary {
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: transparent;
+      color: #e5e7eb;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .btn-back {
+      margin-top: 14px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: transparent;
+      color: #e5e7eb;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .list {
+      font-size: 13px;
+      color: #cbd5f5;
+    }
+
+    .item {
+      margin-bottom: 6px;
+    }
+
+    footer {
+      font-size: 11px;
+      padding: 12px 7vw 16px;
+      color: #6b7280;
+      border-top: 1px solid rgba(15, 23, 42, 0.8);
+    }
+
+    @media (max-width: 900px) {
+      main {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    @media (max-width: 700px) {
+      header {
+        padding: 0 16px;
+      }
+      main {
+        padding: 22px 16px 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="brand-mark">RB</div>
+      <div class="brand-text">RideBuddy</div>
+    </div>
+    <nav>
+      <button class="btn-nav" id="logoutBtn" type="button">Log out</button>
+    </nav>
+  </header>
+
+  <main>
+    <div class="card">
+      <div class="profile-header">
+        <div class="avatar-large" id="avatarInitial">U</div>
+        <div>
+          <div style="font-size:18px;font-weight:600;" id="profileName">User Name</div>
+          <div class="meta" id="profileMeta">Role · Email</div>
+          <div class="meta" style="margin-top:4px;">
+            Rating: 4.8★ · <span class="badge">Green trust badge</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:10px;">
+        <button class="btn-main" type="button" onclick="alert('Edit profile is demo only in this prototype.')">
+          Edit profile (demo)
+        </button>
+        <button class="btn-secondary" type="button" onclick="alert('Ride history screen not implemented in this prototype.')">
+          View ride history (demo)
+        </button>
+      </div>
+
+      <div class="section-title">Profile preferences</div>
+      <div class="list" id="profilePrefs">
+        <!-- dynamic items -->
+      </div>
+
+      <button class="btn-back" type="button" onclick="window.location.href='home.html'">
+        ← Back to home
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Your recent rides (offered)</div>
+      <div class="list" id="recentRides">
+        <!-- dynamic recent rides -->
+      </div>
+
+      <div class="section-title" style="margin-top:14px;">Safety notes</div>
+      <div class="list">
+        <div class="item">• Only accept rides from verified IUB accounts.</div>
+        <div class="item">• You can block users in the real app (not implemented in this demo).</div>
+      </div>
+    </div>
+  </main>
+
+  <footer>RideBuddy – Profile screen (connected to demo backend).</footer>
+
+  <!-- JSON backend -->
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      // 1) Auth guard: must be logged in
+      if (!isLoggedIn()) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      const user = getCurrentUser();
+      if (!user) {
+        logoutUser();
+        window.location.href = "login.html";
+        return;
+      }
+
+      // 2) Logout button
+      document.getElementById("logoutBtn").addEventListener("click", function () {
+        logoutUser();
+        window.location.href = "index.html";
+      });
+
+      // 3) Fill basic profile info from backend
+      const name = user.name || "User";
+      const email = user.email || "unknown@iub.edu.bd";
+      const role = user.role || "rider";
+
+      // Avatar initial
+      const initial = name.trim().charAt(0).toUpperCase() || "U";
+      document.getElementById("avatarInitial").textContent = initial;
+
+      // Name
+      document.getElementById("profileName").textContent = name;
+
+      // Meta line (you can customise this GPA/semester text if needed)
+      let roleText = "";
+      if (role === "driver") roleText = "Driver";
+      else if (role === "both") roleText = "Driver & rider";
+      else roleText = "Rider";
+
+      document.getElementById("profileMeta").textContent =
+        roleText + " · " + email;
+
+      // 4) Profile preferences (simple dynamic text)
+      const prefsContainer = document.getElementById("profilePrefs");
+      prefsContainer.innerHTML = "";
+
+      const prefRole = document.createElement("div");
+      prefRole.className = "item";
+      prefRole.textContent = "• Role: " + roleText;
+
+      const prefRoutes = document.createElement("div");
+      prefRoutes.className = "item";
+      prefRoutes.textContent =
+        "• Preferred routes: Bashundhara ↔ IUB, Rampura ↔ IUB";
+
+      const prefTimes = document.createElement("div");
+      prefTimes.className = "item";
+      prefTimes.textContent =
+        "• Usually available: 8–10 AM and 4–6 PM (demo)";
+
+      prefsContainer.appendChild(prefRole);
+      prefsContainer.appendChild(prefRoutes);
+      prefsContainer.appendChild(prefTimes);
+
+      // 5) Recent rides (offered by this user) from rb_rides
+      const recentRidesEl = document.getElementById("recentRides");
+      const rawRides = localStorage.getItem("rb_rides");
+      let rides = [];
+      try {
+        rides = rawRides ? JSON.parse(rawRides) : [];
+      } catch (e) {
+        console.error("Failed to parse rb_rides JSON", e);
+        rides = [];
+      }
+
+      // Filter: rides where this user is the driver
+      const myRides = rides.filter((ride) => ride.driver_id === user.id);
+
+      if (!myRides.length) {
+        recentRidesEl.innerHTML =
+          '<div class="item">• You haven\'t offered any rides yet.</div>';
+      } else {
+        recentRidesEl.innerHTML = "";
+        // show last 3 rides (most recent)
+        myRides
+          .slice()
+          .sort((a, b) => (b.id || 0) - (a.id || 0))
+          .slice(0, 3)
+          .forEach((ride) => {
+            const item = document.createElement("div");
+            item.className = "item";
+
+            const from = ride.from_location || ride.from || "Unknown start";
+            const to = ride.to_location || ride.to || "Unknown destination";
+            const dateTime =
+              (ride.date || "Unknown date") +
+              (ride.time ? " · " + ride.time : "");
+            const seats =
+              ride.available_seats != null
+                ? ride.available_seats + " seat(s)"
+                : "";
+            const fare =
+              ride.fare_per_seat != null
+                ? " · ৳" + ride.fare_per_seat + "/seat"
+                : "";
+
+            item.textContent =
+              "✔ " + from + " → " + to + " · " + dateTime + " · " + seats + fare;
+
+            recentRidesEl.appendChild(item);
+          });
+      }
+    });
+  </script>
+</body>
+</html>

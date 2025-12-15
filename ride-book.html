@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Booking Confirmation – RideBuddy</title>
+  <style>
+    /* Similar styling as before */
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #111827 0, #020617 45%, #000 100%);
+      color: #e5e7eb;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 7vw;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-mark {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background: #fff;
+      color: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .brand-text {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    header nav {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 14px;
+      color: #9ca3af;
+    }
+
+    main {
+      flex: 1;
+      padding: 28px 7vw 40px;
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 20px;
+      padding: 22px 20px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.85);
+      margin-bottom: 16px;
+    }
+
+    .route {
+      font-size: 20px;
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+
+    .meta {
+      font-size: 13px;
+      color: #9ca3af;
+      margin-bottom: 14px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      font-size: 13px;
+    }
+
+    .info-label {
+      color: #9ca3af;
+      font-size: 12px;
+    }
+
+    .info-value {
+      font-size: 14px;
+    }
+
+    .driver {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #2f80ed, #60a5fa);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .btn-main {
+      padding: 10px 16px;
+      border-radius: 999px;
+      border: none;
+      background: #f9fafb;
+      color: #020617;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-secondary {
+      padding: 10px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: transparent;
+      color: #e5e7eb;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .payment-methods {
+      margin-top: 20px;
+      font-size: 14px;
+    }
+
+    .payment-methods label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .payment-methods input {
+      margin-right: 8px;
+    }
+
+    footer {
+      font-size: 11px;
+      padding: 12px 7vw 16px;
+      color: #6b7280;
+      border-top: 1px solid rgba(15, 23, 42, 0.8);
+    }
+
+    @media (max-width: 700px) {
+      main {
+        padding: 22px 16px 28px;
+      }
+      .info-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="brand-mark">RB</div>
+      <div class="brand-text">RideBuddy</div>
+    </div>
+    <nav>
+      <a href="home.html">back to home</a>
+      <span style="color:#e5e7eb;">Booking Confirmation</span>
+    </nav>
+  </header>
+
+  <main>
+    <div class="card">
+      <div class="route">Bashundhara R/A → IUB North Gate</div>
+      <div class="meta">Today · 8:30 AM · Approx. 25 min</div>
+
+      <div class="info-grid">
+        <div>
+          <div class="info-label">Fare per seat</div>
+          <div class="info-value">৳50</div>
+        </div>
+        <div>
+          <div class="info-label">Available seats</div>
+          <div class="info-value">2</div>
+        </div>
+        <div>
+          <div class="info-label">Passenger preference</div>
+          <div class="info-value">Female preferred</div>
+        </div>
+      </div>
+
+      <div class="driver">
+        <div class="avatar">R</div>
+        <div>
+          <div style="font-size:14px;">Rahat Hasan · 4.8★</div>
+          <div style="font-size:12px;color:#9ca3af;">CSE, 8th semester · Green badge</div>
+        </div>
+      </div>
+
+      <div class="payment-methods">
+        <label>Select Payment Method:</label>
+        <div>
+          <input type="radio" name="payment_method" value="cash" id="cash" />
+          <label for="cash">Cash</label>
+        </div>
+        <div>
+          <input type="radio" name="payment_method" value="bkash" id="bkash" />
+          <label for="bkash">bKash</label>
+        </div>
+        <div>
+          <input type="radio" name="payment_method" value="digital" id="digital" />
+          <label for="digital">visa/master card</label>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <!-- Confirm booking -->
+        <form method="POST" action="payment-confirmation.html">
+          <input type="hidden" name="ride_id" value="1" />
+          <input type="hidden" name="payment_method" id="payment_method" />
+          <button type="submit" class="btn-main" id="confirmBookingBtn">Confirm Booking</button>
+        </form>
+
+        <!-- Cancel booking -->
+        <button class="btn-secondary" onclick="window.location.href='find-ride.html'">Cancel Booking</button>
+      </div>
+    </div>
+  </main>
+
+  <footer>RideBuddy – Ride Booking Confirmation</footer>
+</body>
+</html>

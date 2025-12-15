@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RideBuddy – Home</title>
+  <style>
+    body {
+      background: radial-gradient(circle at top, #111827 0, #020617 45%, #000 100%);
+      color: #e5e7eb;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    header {
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 7vw;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-mark {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background: #fff;
+      color: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .brand-text {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 14px;
+      color: #9ca3af;
+    }
+
+    .nav-link {
+      cursor: pointer;
+      text-decoration: none;
+      color: #9ca3af;
+    }
+
+    .nav-link:hover {
+      color: #e5e7eb;
+    }
+
+    .btn-nav {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: transparent;
+      color: #e5e7eb;
+      padding: 6px 12px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .btn-nav:hover {
+      background: rgba(148, 163, 184, 0.15);
+    }
+
+    main {
+      flex: 1;
+      padding: 32px 7vw 32px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.2fr);
+      gap: 32px;
+      align-items: flex-start;
+    }
+
+    .page-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .page-sub {
+      font-size: 14px;
+      color: #9ca3af;
+      margin-bottom: 18px;
+    }
+
+    .actions-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .btn-primary {
+      padding: 10px 18px;
+      border-radius: 999px;
+      border: none;
+      background: #f9fafb;
+      color: #020617;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.9;
+    }
+
+    .btn-secondary {
+      padding: 10px 18px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: transparent;
+      color: #e5e7eb;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .section-title {
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #9ca3af;
+      margin-bottom: 10px;
+    }
+
+    .rides-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .ride-card {
+      border-radius: 14px;
+      border: 1px solid rgba(148,163,184,0.3);
+      padding: 12px 14px;
+      background: rgba(15,23,42,0.9);
+      font-size: 13px;
+    }
+
+    .ride-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .ride-meta {
+      font-size: 12px;
+      color: #9ca3af;
+    }
+
+    .hero-card {
+      background: radial-gradient(circle at top left, rgba(56, 189, 248,0.15), transparent 55%),
+                  radial-gradient(circle at bottom right, rgba(96, 165, 250,0.2), transparent 55%),
+                  rgba(15, 23, 42, 0.96);
+      border-radius: 22px;
+      padding: 18px 18px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      box-shadow: 0 25px 60px rgba(15, 23, 42, 0.95);
+      max-width: 420px;
+      margin-left: auto;
+      font-size: 13px;
+    }
+
+    .hero-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .pill {
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(52, 211, 153, 0.8);
+      font-size: 11px;
+      color: #bbf7d0;
+      background: rgba(6, 78, 59, 0.4);
+    }
+
+    footer {
+      background: #020617;
+      border-top: 1px solid rgba(148,163,184,0.2);
+      padding: 12px 7vw;
+      color: #6b7280;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    @media (max-width: 900px) {
+      main {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .hero-card {
+        margin-left: 0;
+      }
+    }
+
+    @media (max-width: 600px) {
+      header {
+        padding: 0 16px;
+      }
+      main {
+        padding: 24px 16px;
+      }
+      footer {
+        padding: 10px 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="brand-mark">RB</div>
+      <div class="brand-text">RideBuddy</div>
+    </div>
+    <nav>
+      <span class="nav-link">Dashboard</span>
+      <a class="nav-link" href="profile.html">Profile</a>
+      <button class="btn-nav" id="logoutBtn">Log out</button>
+    </nav>
+  </header>
+
+  <main>
+    <section>
+      <h1 class="page-title">Welcome back, <span id="userName">User</span> 👋</h1>
+      <p class="page-sub">
+        Plan your next trip to IUB — book a seat or offer one to other students.
+        <span id="userEmail" style="display:block;font-size:12px;margin-top:4px;color:#9ca3af;"></span>
+      </p>
+
+      <div class="actions-row">
+        <button class="btn-primary" type="button" onclick="window.location.href='find-ride.html'">
+          Find a ride
+        </button>
+        <button class="btn-secondary" type="button" onclick="window.location.href='offer-ride.html'">
+          Offer a ride
+        </button>
+      </div>
+
+      <div style="margin-top:18px;">
+        <div class="section-title">Upcoming rides</div>
+        <div class="rides-list" id="ridesList">
+          <!-- Rides will be loaded from localStorage JSON (rb_rides) -->
+        </div>
+      </div>
+    </section>
+
+    <aside class="hero-card">
+      <div class="hero-card-header">
+        <span>Today’s highlight</span>
+        <span class="pill">Popular route</span>
+      </div>
+      <div style="font-weight:600;margin-bottom:4px;">
+        Bashundhara R/A → IUB North Gate
+      </div>
+      <div style="font-size:12px;color:#cbd5f5;margin-bottom:10px;">
+        Weekdays · 7:30–9:30 AM · Multiple rides available
+      </div>
+      <div style="font-size:12px;margin-bottom:4px;">
+        Avg price: <strong>৳50</strong> per seat
+      </div>
+      <div style="font-size:12px;margin-bottom:4px;">
+        Avg rating: <strong>4.8★</strong> · Trusted by 500+ students
+      </div>
+      <div style="margin-top:10px;font-size:12px;color:#9ca3af;">
+        Tip: Book at least 30 minutes before your class time to avoid last-minute rush.
+      </div>
+    </aside>
+  </main>
+
+  <footer>
+    Logged in to RideBuddy · Safe ride sharing for IUB students.
+  </footer>
+
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      // 1) Auth guard
+      if (!isLoggedIn()) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      const user = getCurrentUser();
+      if (!user) {
+        logoutUser();
+        window.location.href = "login.html";
+        return;
+      }
+
+      // 2) Show user info
+      document.getElementById("userName").textContent = user.name || "User";
+      document.getElementById("userEmail").textContent = user.email || "";
+
+      // 3) Logout
+      document.getElementById("logoutBtn").addEventListener("click", function () {
+        logoutUser();
+        window.location.href = "index.html";
+      });
+
+      // 4) Load rides from JSON/localStorage
+      const ridesListElem = document.getElementById("ridesList");
+      const rawRides = localStorage.getItem("rb_rides");
+      let rides = [];
+      try {
+        rides = rawRides ? JSON.parse(rawRides) : [];
+      } catch (e) {
+        console.error("Failed to parse rb_rides JSON", e);
+        rides = [];
+      }
+
+      if (!rides.length) {
+        ridesListElem.innerHTML =
+          "<p style='font-size:12px;color:#9ca3af;'>No upcoming rides yet.</p>";
+        return;
+      }
+
+      ridesListElem.innerHTML = "";
+
+      // Helper functions to support both demo + offered rides
+      function getFrom(ride) {
+        return ride.from_location || ride.from || "Unknown start";
+      }
+
+      function getTo(ride) {
+        return ride.to_location || ride.to || "Unknown destination";
+      }
+
+      function getTimeText(ride) {
+        if (ride.date && ride.time) {
+          return ride.date + " · " + ride.time;
+        }
+        return ride.time || "Time not set";
+      }
+
+      function getSeatInfo(ride) {
+        if (ride.available_seats != null && ride.fare_per_seat != null) {
+          return ride.available_seats + " seats · ৳" + ride.fare_per_seat + "/seat";
+        }
+        if (ride.seatText) {
+          return ride.seatText;
+        }
+        return "Seats info not set";
+      }
+
+      function getStatus(ride) {
+        return ride.status || "Active";
+      }
+
+      // Render cards
+      rides.forEach((ride) => {
+        const card = document.createElement("div");
+        card.className = "ride-card";
+
+        card.innerHTML = `
+          <div class="ride-row">
+            <span>${getFrom(ride)} → ${getTo(ride)}</span>
+            <span>${getTimeText(ride)}</span>
+          </div>
+          <div class="ride-row ride-meta">
+            <span>${getSeatInfo(ride)}</span>
+            <span>Status: ${getStatus(ride)}</span>
+          </div>
+        `;
+
+        ridesListElem.appendChild(card);
+      });
+    });
+  </script>
+</body>
+</html>

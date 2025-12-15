@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Offer a ride – RideBuddy</title>
+  <style>
+    :root {
+      --bg: #020617;
+      --card-bg: #020617;
+      --muted: #9ca3af;
+      --accent: #2f80ed;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #111827 0, #020617 45%, #000 100%);
+      color: #e5e7eb;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 7vw;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-mark {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background: #fff;
+      color: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .brand-text {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    header nav {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 14px;
+      color: #9ca3af;
+    }
+
+    header nav a {
+      text-decoration: none;
+      color: #9ca3af;
+    }
+
+    header nav a:hover {
+      color: #e5e7eb;
+    }
+
+    header .btn {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: transparent;
+      color: #e5e7eb;
+      padding: 6px 12px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    main {
+      flex: 1;
+      padding: 32px 7vw 40px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .layout {
+      width: 100%;
+      max-width: 960px;
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+      gap: 28px;
+    }
+
+    .card {
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 20px;
+      padding: 22px 20px 20px;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.85);
+    }
+
+    .card h1 {
+      font-size: 22px;
+      margin-bottom: 6px;
+    }
+
+    .card-sub {
+      font-size: 13px;
+      color: #9ca3af;
+      margin-bottom: 18px;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: 500;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .input, .select, textarea {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      padding: 10px 12px;
+      font-size: 14px;
+      margin-bottom: 12px;
+      background: rgba(15, 23, 42, 0.8);
+      color: #e5e7eb;
+    }
+
+    .input::placeholder,
+    textarea::placeholder {
+      color: #6b7280;
+    }
+
+    .row-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .btn-primary {
+      width: 100%;
+      border-radius: 12px;
+      border: none;
+      padding: 11px 14px;
+      font-size: 15px;
+      font-weight: 600;
+      background: linear-gradient(135deg, #2f80ed, #60a5fa);
+      color: #f9fafb;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+
+    .sidebar-title {
+      font-size: 15px;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .hint {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-bottom: 10px;
+    }
+
+    .bullet {
+      font-size: 12px;
+      color: #d1d5db;
+      margin-bottom: 6px;
+      display: flex;
+      gap: 6px;
+    }
+
+    .bullet span {
+      color: #60a5fa;
+    }
+
+    footer {
+      font-size: 11px;
+      padding: 12px 7vw 16px;
+      color: #6b7280;
+      border-top: 1px solid rgba(15, 23, 42, 0.8);
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    @media (max-width: 600px) {
+      header {
+        padding: 0 16px;
+      }
+      main {
+        padding: 22px 16px 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="brand-mark">RB</div>
+      <div class="brand-text">RideBuddy</div>
+    </div>
+    <nav>
+      <a href="home.html">Back</a>
+      <a href="profile.html">Profile</a>
+      <button class="btn" id="logoutBtn" type="button">Log out</button>
+    </nav>
+  </header>
+
+  <main>
+    <div class="layout">
+      <div class="card">
+        <h1>Offer a ride</h1>
+        <p class="card-sub">Share your route with IUB students and split the cost safely.</p>
+
+        <form id="offerForm" action="#">
+          <label for="from">From</label>
+          <input
+            id="from"
+            name="from_location"
+            class="input"
+            placeholder="e.g., Bashundhara R/A"
+            required
+          />
+
+          <label for="to">To</label>
+          <input
+            id="to"
+            name="to_location"
+            class="input"
+            placeholder="e.g., IUB North Gate"
+            required
+          />
+
+          <div class="row-2">
+            <div>
+              <label for="date">Date</label>
+              <input id="date" name="date" type="date" class="input" required />
+            </div>
+            <div>
+              <label for="time">Time</label>
+              <input id="time" name="time" type="time" class="input" required />
+            </div>
+          </div>
+
+          <div class="row-2">
+            <div>
+              <label for="seats">Available seats</label>
+              <input
+                id="seats"
+                name="available_seats"
+                type="number"
+                min="1"
+                max="4"
+                class="input"
+                placeholder="e.g., 2"
+                required
+              />
+            </div>
+            <div>
+              <label for="fare">Fare per seat (৳)</label>
+              <input
+                id="fare"
+                name="fare_per_seat"
+                type="number"
+                min="0"
+                step="1"
+                class="input"
+                placeholder="e.g., 50"
+                required
+              />
+            </div>
+          </div>
+
+          <label for="genderPref">Passenger preference</label>
+          <select id="genderPref" name="passenger_preference" class="select">
+            <option value="any">Any gender</option>
+            <option value="female_only">Female passengers only</option>
+            <option value="female_pref">Female preferred</option>
+          </select>
+
+          <label for="note">Optional note to riders</label>
+          <textarea
+            id="note"
+            name="note"
+            class="input"
+            style="min-height: 80px; resize: vertical;"
+            placeholder="e.g., Will stop near Rampura bridge if needed."
+          ></textarea>
+
+          <button type="submit" class="btn-primary">Post ride</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="sidebar-title">Tips for safe ride offers</div>
+        <p class="hint">Only share rides with verified IUB students.</p>
+        <div class="bullet"><span>•</span>Pick a well-lit, safe pickup spot near campus.</div>
+        <div class="bullet"><span>•</span>Confirm passenger details before starting the ride.</div>
+        <div class="bullet"><span>•</span>Keep emergency contacts saved &amp; phone charged.</div>
+        <div class="bullet"><span>•</span>Update available seats if someone cancels.</div>
+        <div class="bullet"><span>•</span>Be respectful and follow campus guidelines.</div>
+      </div>
+    </div>
+  </main>
+
+  <footer>RideBuddy – For IUB community rides only.</footer>
+
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      // Auth guard
+      if (!isLoggedIn()) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      const user = getCurrentUser();
+      if (!user) {
+        logoutUser();
+        window.location.href = "login.html";
+        return;
+      }
+
+      // Logout
+      document.getElementById("logoutBtn").addEventListener("click", function () {
+        logoutUser();
+        window.location.href = "index.html";
+      });
+
+      const form = document.getElementById("offerForm");
+
+      function createRide(ride) {
+        const raw = localStorage.getItem("rb_rides");
+        let rides = [];
+        if (raw) {
+          try {
+            rides = JSON.parse(raw);
+          } catch (e) {
+            console.error("Failed to parse rb_rides JSON", e);
+            rides = [];
+          }
+        }
+        ride.id = Date.now();
+        rides.push(ride);
+        localStorage.setItem("rb_rides", JSON.stringify(rides));
+      }
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const ride = {
+          driver_id: user.id,
+          driver_name: user.name,
+          from_location: document.getElementById("from").value.trim(),
+          to_location: document.getElementById("to").value.trim(),
+          date: document.getElementById("date").value,
+          time: document.getElementById("time").value,
+          available_seats: parseInt(document.getElementById("seats").value, 10),
+          fare_per_seat: parseInt(document.getElementById("fare").value, 10),
+          passenger_preference: document.getElementById("genderPref").value,
+          note: document.getElementById("note").value.trim(),
+          status: "Active"
+        };
+
+        if (!ride.from_location || !ride.to_location) {
+          alert("Please fill all required fields.");
+          return;
+        }
+
+        try {
+          createRide(ride);
+          alert("Ride posted successfully!");
+          window.location.href = "home.html";
+        } catch (err) {
+          console.error(err);
+          alert("Something went wrong while saving your ride.");
+        }
+      });
+    });
+  </script>
+</body>
+</html>

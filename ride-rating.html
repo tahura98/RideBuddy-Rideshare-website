@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rate Your Ride – RideBuddy</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #111827 0, #020617 45%, #000 100%);
+      color: #e5e7eb;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .card {
+      background: rgba(15, 23, 42, 0.95);
+      border-radius: 18px;
+      padding: 24px 22px;
+      border: 1px solid rgba(148,163,184,0.35);
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 25px 60px rgba(15, 23, 42, 0.95);
+    }
+
+    h1 {
+      font-size: 22px;
+      margin: 8px 0 6px;
+    }
+
+    .stars {
+      font-size: 24px;
+      margin: 10px 0;
+    }
+
+    .stars span {
+      cursor: pointer;
+    }
+
+    .btn-main {
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: none;
+      background: #f9fafb;
+      color: #020617;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    footer {
+      font-size: 11px;
+      padding: 12px 7vw 16px;
+      color: #6b7280;
+      border-top: 1px solid rgba(15, 23, 42, 0.8);
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Rate Your Ride</h1>
+    <p>How was your ride with Rahat?</p>
+    <div class="stars">
+      <span onclick="rateRide(1)">★</span>
+      <span onclick="rateRide(2)">★</span>
+      <span onclick="rateRide(3)">★</span>
+      <span onclick="rateRide(4)">★</span>
+      <span onclick="rateRide(5)">★</span>
+    </div>
+    <button class="btn-main" onclick="submitRating()">Submit Rating</button>
+  </div>
+  <footer>RideBuddy – Rate your Ride</footer>
+
+  <script>
+    function rateRide(stars) {
+      console.log('Rating:', stars);
+      // Store the rating or send it to the backend
+    }
+
+    function submitRating() {
+      alert('Thank you for your feedback!');
+      window.location.href = 'home.html'; // Redirect to home page
+    }
+  </script>
+</body>
+</html>

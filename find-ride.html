@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Find a ride – RideBuddy</title>
+  <style>
+    :root {
+      --bg: #020617;
+      --card-bg: #020617;
+      --muted: #9ca3af;
+      --accent: #2f80ed;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #111827 0, #020617 45%, #000 100%);
+      color: #e5e7eb;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 7vw;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-mark {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background: #fff;
+      color: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .brand-text {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    header nav {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 14px;
+      color: #9ca3af;
+    }
+
+    header nav a {
+      text-decoration: none;
+      color: #9ca3af;
+    }
+
+    header nav a:hover {
+      color: #e5e7eb;
+    }
+
+    header .btn {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: transparent;
+      color: #e5e7eb;
+      padding: 6px 12px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    main {
+      flex: 1;
+      padding: 28px 7vw 40px;
+      display: grid;
+      grid-template-columns: minmax(0, 2.2fr) minmax(0, 3fr);
+      gap: 24px;
+    }
+
+    .card {
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 20px;
+      padding: 22px 20px 20px;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.85);
+    }
+
+    .card h1 {
+      font-size: 22px;
+      margin-bottom: 6px;
+    }
+
+    .card-sub {
+      font-size: 13px;
+      color: #9ca3af;
+      margin-bottom: 18px;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: 500;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .input, .select {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      padding: 10px 12px;
+      font-size: 14px;
+      margin-bottom: 12px;
+      background: rgba(15, 23, 42, 0.8);
+      color: #e5e7eb;
+    }
+
+    .input::placeholder {
+      color: #6b7280;
+    }
+
+    .btn-primary {
+      width: 100%;
+      border-radius: 12px;
+      border: none;
+      padding: 11px 14px;
+      font-size: 15px;
+      font-weight: 600;
+      background: linear-gradient(135deg, #2f80ed, #60a5fa);
+      color: #f9fafb;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+
+    .results-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .results-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .ride-item {
+      border-radius: 14px;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      padding: 12px 12px 10px;
+      background: rgba(15, 23, 42, 0.85);
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+      text-decoration: none;
+      color: inherit;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .ride-item:hover {
+      background: rgba(30, 64, 175, 0.9);
+      transform: translateY(-1px);
+    }
+
+    .ride-main {
+      font-size: 14px;
+      margin-bottom: 2px;
+    }
+
+    .ride-meta {
+      font-size: 12px;
+      color: #9ca3af;
+    }
+
+    .pill {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(96, 165, 250, 0.6);
+      color: #bfdbfe;
+    }
+
+    .empty-state {
+      font-size: 13px;
+      color: #9ca3af;
+      margin-top: 8px;
+    }
+
+    footer {
+      font-size: 11px;
+      padding: 12px 7vw 16px;
+      color: #6b7280;
+      border-top: 1px solid rgba(15, 23, 42, 0.8);
+    }
+
+    @media (max-width: 900px) {
+      main {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    @media (max-width: 600px) {
+      header {
+        padding: 0 16px;
+      }
+      main {
+        padding: 22px 16px 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="brand-mark">RB</div>
+      <div class="brand-text">RideBuddy</div>
+    </div>
+    <nav>
+      <a href="home.html">Back</a>
+      <a href="profile.html">Profile</a>
+      <button class="btn" id="logoutBtn" type="button">Log out</button>
+    </nav>
+  </header>
+
+  <main>
+    <div class="card">
+      <h1>Find a ride</h1>
+      <p class="card-sub">Search rides offered by verified IUB students.</p>
+
+      <form id="searchForm" action="#">
+        <label for="from">From</label>
+        <input
+          id="from"
+          name="from"
+          class="input"
+          placeholder="e.g., Bashundhara R/A"
+          required
+        />
+
+        <label for="to">To</label>
+        <input
+          id="to"
+          name="to"
+          class="input"
+          placeholder="e.g., IUB North Gate"
+          required
+        />
+
+        <label for="datetime">Date &amp; time (optional)</label>
+        <input
+          id="datetime"
+          name="datetime"
+          type="datetime-local"
+          class="input"
+        />
+
+        <label for="gender">Driver preference</label>
+        <select id="gender" name="driver_pref" class="select">
+          <option value="">No preference</option>
+          <option value="female_pref">Female driver preferred</option>
+        </select>
+
+        <button type="submit" class="btn-primary">Search rides</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <div class="results-title">Available rides</div>
+      <div class="results-list" id="results"></div>
+      <div class="empty-state" id="emptyState" style="display:none;">
+        No rides found for this route yet. Try a different route or time.
+      </div>
+    </div>
+  </main>
+
+  <footer>RideBuddy – For IUB community rides only.</footer>
+
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      // Auth guard
+      if (!isLoggedIn()) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      // Logout
+      document.getElementById("logoutBtn").addEventListener("click", function () {
+        logoutUser();
+        window.location.href = "index.html";
+      });
+
+      const form = document.getElementById("searchForm");
+      const resultsEl = document.getElementById("results");
+      const emptyStateEl = document.getElementById("emptyState");
+
+      function getAllRides() {
+        const raw = localStorage.getItem("rb_rides");
+        if (!raw) return [];
+        try {
+          return JSON.parse(raw);
+        } catch (e) {
+          console.error("Failed to parse rb_rides JSON", e);
+          return [];
+        }
+      }
+
+      function searchRides({ from, to, date }) {
+        const all = getAllRides();
+
+        const fromLower = from.trim().toLowerCase();
+        const toLower = to.trim().toLowerCase();
+        const dateStr = date ? date.slice(0, 10) : "";
+
+        return all.filter((ride) => {
+          const rFrom = (ride.from_location || ride.from || "").toLowerCase();
+          const rTo = (ride.to_location || ride.to || "").toLowerCase();
+
+          const matchesFrom = !fromLower || rFrom.includes(fromLower);
+          const matchesTo = !toLower || rTo.includes(toLower);
+
+          let matchesDate = true;
+          if (dateStr) {
+            const rideDate = (ride.date || "").slice(0, 10);
+            if (rideDate) {
+              matchesDate = rideDate === dateStr;
+            }
+          }
+
+          return matchesFrom && matchesTo && matchesDate;
+        });
+      }
+
+      function formatWhen(ride) {
+        if (ride.date && ride.time) return ride.date + " · " + ride.time;
+        return ride.time || "Time not set";
+      }
+
+      function formatFare(ride) {
+        if (ride.fare_per_seat != null) return "৳" + ride.fare_per_seat;
+        if (ride.price != null) return "৳" + ride.price;
+        return "৳";
+      }
+
+      function formatSeats(ride) {
+        if (ride.available_seats != null) return ride.available_seats + " seats left";
+        if (ride.seatText) return ride.seatText;
+        return "2";
+      }
+
+      function formatPreference(ride) {
+        const pref = ride.passenger_preference || ride.driver_preference;
+        if (pref === "female_only") return "Female only";
+        if (pref === "female_pref") return "Female preferred";
+        return "";
+      }
+
+      function renderRides(rides) {
+        resultsEl.innerHTML = "";
+
+        if (!rides.length) {
+          emptyStateEl.style.display = "block";
+          return;
+        }
+        emptyStateEl.style.display = "none";
+
+        rides.forEach((ride) => {
+          const item = document.createElement("div");
+          item.className = "ride-item";
+
+          const left = document.createElement("div");
+          const right = document.createElement("div");
+          right.style.textAlign = "right";
+
+          left.innerHTML = `
+            <div class="ride-main">
+              ${(ride.from_location || ride.from || "Unknown")} → 
+              ${(ride.to_location || ride.to || "Unknown")}
+            </div>
+            <div class="ride-meta">
+              ${formatWhen(ride)}
+              ${ride.driver_name ? " · Driver: " + ride.driver_name : ""}
+            </div>
+          `;
+
+          const prefLabel = formatPreference(ride);
+          right.innerHTML = `
+            <div class="ride-main">${formatFare(ride)}</div>
+            <div class="ride-meta">${formatSeats(ride)}</div>
+            ${prefLabel ? '<div class="pill" style="margin-top:4px;">' + prefLabel + "</div>" : ""}
+          `;
+
+          item.appendChild(left);
+          item.appendChild(right);
+
+          item.addEventListener("click", function () {
+            try {
+              localStorage.setItem("rb_selected_ride", JSON.stringify(ride));
+              window.location.href = "ride-details.html";
+            } catch (e) {
+              console.error("Failed to store selected ride", e);
+              alert("Could not open ride details.");
+            }
+          });
+
+          resultsEl.appendChild(item);
+        });
+      }
+
+      // Initial: show all rides
+      renderRides(getAllRides());
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        const from = document.getElementById("from").value;
+        const to = document.getElementById("to").value;
+        const datetime = document.getElementById("datetime").value;
+
+        const rides = searchRides({ from, to, date: datetime });
+        renderRides(rides);
+      });
+    });
+  </script>
+</body>
+</html>
