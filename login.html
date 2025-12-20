@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -21,7 +22,7 @@
       background: rgba(15, 23, 42, 0.95);
       border-radius: 18px;
       padding: 24px 22px;
-      border: 1px solid rgba(148,163,184,0.35);
+      border: 1px solid rgba(148, 163, 184, 0.35);
       width: 100%;
       max-width: 400px;
       box-shadow: 0 25px 60px rgba(15, 23, 42, 0.95);
@@ -73,7 +74,7 @@
       width: 100%;
       padding: 9px 10px;
       border-radius: 10px;
-      border: 1px solid rgba(148,163,184,0.6);
+      border: 1px solid rgba(148, 163, 184, 0.6);
       background: #020617;
       color: #e5e7eb;
       font-size: 13px;
@@ -140,6 +141,7 @@
     }
   </style>
 </head>
+
 <body>
   <div class="card">
     <div class="brand">
@@ -181,21 +183,23 @@
       const form = document.getElementById("loginForm");
       const errorBox = document.getElementById("error");
 
-      form.addEventListener("submit", function (e) {
+      form.addEventListener("submit", async function (e) {
         e.preventDefault();
 
         const email = document.getElementById("email").value.trim();
         const password = document.getElementById("password").value.trim();
 
         try {
-          loginUser({ email, password });
+          await loginUser({ email, password });
           window.location.href = "home.html";
         } catch (err) {
+          console.error(err);
           errorBox.style.display = "block";
-          errorBox.textContent = err.message;
+          errorBox.textContent = err.message || "Login failed";
         }
       });
     });
   </script>
 </body>
+
 </html>

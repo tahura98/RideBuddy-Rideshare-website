@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -77,16 +78,6 @@
       color: #e5e7eb;
     }
 
-    .btn-nav {
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      background: transparent;
-      color: #e5e7eb;
-      padding: 6px 12px;
-      font-size: 13px;
-      cursor: pointer;
-    }
-
     main {
       flex: 1;
       padding: 20px 7vw 16px;
@@ -115,6 +106,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 10px;
     }
 
     .chat-header-info {
@@ -224,16 +216,18 @@
       border-top: 1px solid rgba(15, 23, 42, 0.8);
     }
 
-    @media (max-width: 700px) {
+    @media (max-width:700px) {
       header {
         padding: 0 16px;
       }
+
       main {
         padding: 14px 16px 10px;
       }
     }
   </style>
 </head>
+
 <body>
   <header>
     <div class="brand">
@@ -241,7 +235,7 @@
       <div class="brand-text">RideBuddy</div>
     </div>
     <nav>
-      <a href="ride-details.html"> Back </a>
+      <a href="ride-details.html">← Back</a>
     </nav>
   </header>
 
@@ -249,56 +243,106 @@
     <div class="chat-wrapper">
       <div class="chat-header">
         <div class="chat-header-info">
-          <div class="avatar">R</div>
+          <div class="avatar" id="avatarBox">D</div>
           <div>
-            <div style="font-size:14px;">Chat with Rahat (Driver)</div>
-            <div class="chat-header-meta">Bashundhara R/A → IUB North Gate · Today 8:30 AM</div>
+            <div style="font-size:14px;" id="chatTitle">Chat</div>
+            <div class="chat-header-meta" id="chatMeta">—</div>
           </div>
         </div>
       </div>
 
-      <div class="chat-body">
-        <div class="msg-row">
-          <div>
-            <div class="bubble them">
-              Hi! I’ll be at the Bashundhara main gate 5 minutes before pickup.
-            </div>
-            <div class="time">08:02</div>
-          </div>
-        </div>
+      <div class="chat-body" id="chatBody"></div>
 
-        <div class="msg-row me">
-          <div>
-            <div class="bubble me">
-              Great, I’ll be there on time. I’m wearing a blue backpack.
-            </div>
-            <div class="time" style="text-align:right;">08:04</div>
-          </div>
-        </div>
-
-        <div class="msg-row">
-          <div>
-            <div class="bubble them">
-              Got it. Please keep exact change for the fare.
-            </div>
-            <div class="time">08:05</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Backend-connected message form -->
-      <form class="chat-input" method="POST" action="send_message.php">
-
-        <textarea
-          name="message"
-          placeholder="Type a message to the driver..."
-          required
-        ></textarea>
+      <form class="chat-input" id="chatForm">
+        <textarea id="msgInput" placeholder="Type a message..." required></textarea>
         <button type="submit" class="btn-send">Send</button>
       </form>
     </div>
   </main>
 
-  <footer>RideBuddy – Chat is for coordination only (demo).</footer>
+  <footer>RideBuddy – Chat is for coordination only (JSON backend).</footer>
+
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async function () {
+      if (!isLoggedIn()) { window.location.href = "login.html"; return; }
+      const user = getCurrentUser();
+      if (!user) { await logoutUser(); window.location.href = "login.html"; return; }
+
+      const ride = getSelectedRide();
+      if (!ride) { window.location.href = "find-ride.html"; return; }
+
+      document.getElementById("avatarBox").textContent = (ride.driver_name || "D").slice(0, 1).toUpperCase();
+      document.getElementById("chatTitle").textContent = `Chat · ${ride.driver_name || "Driver"}`;
+      document.getElementById("chatMeta").textContent =
+        `${ride.from_location} → ${ride.to_location} · ${ride.date} ${ride.time}`;
+
+      const chatBody = document.getElementById("chatBody");
+
+      function escapeHtml(s) {
+        return String(s || "").replace(/[&<>"']/g, m => ({
+          "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+        }[m]));
+      }
+
+      async function render() {
+        try {
+          const msgs = await getRideChat(ride.id);
+          chatBody.innerHTML = "";
+
+          if (!msgs.length) {
+            const empty = document.createElement("div");
+            empty.style.color = "#9ca3af";
+            empty.style.fontSize = "12px";
+            empty.textContent = "No messages yet. Say hi!";
+            chatBody.appendChild(empty);
+            return;
+          }
+
+          msgs.forEach(m => {
+            const isMe = Number(m.sender_id) === Number(user.id);
+            const row = document.createElement("div");
+            row.className = "msg-row " + (isMe ? "me" : "");
+
+            row.innerHTML = `
+            <div>
+              <div class="bubble ${isMe ? "me" : "them"}">
+                <strong style="font-size:11px;opacity:.9;">${isMe ? "Me" : escapeHtml(m.sender_name)}</strong><br/>
+                ${escapeHtml(m.text)}
+              </div>
+              <div class="time" style="${isMe ? "text-align:right;" : ""}">${escapeHtml(m.time || "")}</div>
+            </div>
+          `;
+            chatBody.appendChild(row);
+          });
+
+        } catch (e) {
+          console.error("Chat polling failed", e);
+        }
+      }
+
+      await render();
+
+      const interval = setInterval(render, 3000);
+      window.addEventListener("beforeunload", () => clearInterval(interval));
+
+      document.getElementById("chatForm").addEventListener("submit", async function (e) {
+        e.preventDefault();
+        const input = document.getElementById("msgInput");
+        const text = input.value.trim();
+        if (!text) return;
+
+        try {
+          await sendRideChatMessage(ride.id, text);
+          input.value = "";
+          await render();
+        } catch (err) {
+          alert(err.message);
+        }
+      });
+    });
+  </script>
+
 </body>
+
 </html>

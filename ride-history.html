@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -99,6 +100,7 @@
     }
   </style>
 </head>
+
 <body>
   <header>
     <div class="brand">
@@ -130,5 +132,89 @@
   </main>
 
   <footer>RideBuddy – Ride History</footer>
+  
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async function () {
+      if (!isLoggedIn()) { window.location.href = "login.html"; return; }
+      const user = getCurrentUser();
+      if (!user) { await logoutUser(); window.location.href = "login.html"; return; }
+
+      const wrap = document.getElementById("rideHistory");
+      if (!wrap) return;
+
+      let bookings = [];
+      try {
+        bookings = await getUserBookings(user.id);
+      } catch (e) {
+        console.error(e);
+      }
+
+      if (!bookings || !bookings.length) {
+        wrap.innerHTML = `
+        <div class="card">
+          <h2>Recent Rides</h2>
+          <div class="ride-meta">No bookings yet. Go to Find a ride and book one.</div>
+          <button class="btn-main" onclick="window.location.href='find-ride.html'">Find a ride</button>
+        </div>
+      `;
+        return;
+      }
+
+      wrap.innerHTML = "";
+      bookings.forEach(bk => {
+        const from = bk.from_location || "—";
+        const to = bk.to_location || "—";
+        const when = `${bk.date || ""} ${bk.time || ""}`.trim() || "—";
+
+        const canRate = (bk.status === "COMPLETED" || bk.status === "PAID") && !bk.rating_given;
+
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+        <h2>${from} → ${to}</h2>
+        <div class="ride-meta">
+          <p>${when}</p>
+          <p>Status: <strong>${bk.status}</strong> · Seats: ${bk.seats} · Fare: ৳${bk.fare_per_seat}</p>
+          <p>Driver: <strong>${bk.driver_name || "Driver"}</strong></p>
+        </div>
+
+        <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn-main" data-action="chat">Chat</button>
+          ${canRate ? `<button class="btn-main" data-action="rate">Rate</button>` : ``}
+        </div>
+      `;
+
+        card.querySelector('[data-action="chat"]').onclick = async () => {
+      
+          try {
+            const ride = await getRideById(bk.ride_id);
+            if (ride) {
+              setSelectedRide(ride);
+              window.location.href = "chat.html";
+            } else {
+              alert("Ride details not found");
+            }
+          } catch (e) {
+            console.error(e);
+            alert("Error opening chat");
+          }
+        };
+
+        const rateBtn = card.querySelector('[data-action="rate"]');
+        if (rateBtn) {
+          rateBtn.onclick = () => {
+         
+            window.location.href = "ride-rating.html?bookingId=" + encodeURIComponent(bk.id);
+          };
+        }
+
+        wrap.appendChild(card);
+      });
+    });
+  </script>
+
+
 </body>
+
 </html>

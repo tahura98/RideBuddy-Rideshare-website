@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Booking Confirmation – RideBuddy</title>
   <style>
-    /* Similar styling as before */
+    
     body {
       margin: 0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -174,12 +175,14 @@
       main {
         padding: 22px 16px 28px;
       }
+
       .info-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
     }
   </style>
 </head>
+
 <body>
   <header>
     <div class="brand">
@@ -193,63 +196,120 @@
   </header>
 
   <main>
-    <div class="card">
-      <div class="route">Bashundhara R/A → IUB North Gate</div>
-      <div class="meta">Today · 8:30 AM · Approx. 25 min</div>
-
-      <div class="info-grid">
-        <div>
-          <div class="info-label">Fare per seat</div>
-          <div class="info-value">৳50</div>
-        </div>
-        <div>
-          <div class="info-label">Available seats</div>
-          <div class="info-value">2</div>
-        </div>
-        <div>
-          <div class="info-label">Passenger preference</div>
-          <div class="info-value">Female preferred</div>
-        </div>
-      </div>
-
-      <div class="driver">
-        <div class="avatar">R</div>
-        <div>
-          <div style="font-size:14px;">Rahat Hasan · 4.8★</div>
-          <div style="font-size:12px;color:#9ca3af;">CSE, 8th semester · Green badge</div>
-        </div>
-      </div>
-
-      <div class="payment-methods">
-        <label>Select Payment Method:</label>
-        <div>
-          <input type="radio" name="payment_method" value="cash" id="cash" />
-          <label for="cash">Cash</label>
-        </div>
-        <div>
-          <input type="radio" name="payment_method" value="bkash" id="bkash" />
-          <label for="bkash">bKash</label>
-        </div>
-        <div>
-          <input type="radio" name="payment_method" value="digital" id="digital" />
-          <label for="digital">visa/master card</label>
-        </div>
-      </div>
-
-      <div class="btn-row">
-        <!-- Confirm booking -->
-        <form method="POST" action="payment-confirmation.html">
-          <input type="hidden" name="ride_id" value="1" />
-          <input type="hidden" name="payment_method" id="payment_method" />
-          <button type="submit" class="btn-main" id="confirmBookingBtn">Confirm Booking</button>
-        </form>
-
-        <!-- Cancel booking -->
-        <button class="btn-secondary" onclick="window.location.href='find-ride.html'">Cancel Booking</button>
-      </div>
+    <div class="card" id="bookingCard">
+      <div style="text-align:center; padding:20px;">Loading booking details...</div>
     </div>
   </main>
 
   <footer>RideBuddy – Ride Booking Confirmation</footer>
+
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async function () {
+      if (!isLoggedIn()) { window.location.href = "login.html"; return; }
+
+      const params = new URLSearchParams(window.location.search);
+      const bookingId = params.get("bookingId");
+      if (!bookingId) {
+        alert("No booking ID found");
+        window.location.href = "find-ride.html";
+        return;
+      }
+
+      let booking = null;
+      try {
+        booking = await getBookingById(bookingId);
+      } catch (e) {
+        console.error(e);
+      }
+
+      if (!booking) {
+        document.getElementById("bookingCard").innerHTML = "<div style='text-align:center'>Booking not found.</div>";
+        return;
+      }
+
+     
+      let ride = null;
+      try {
+        ride = await getRideById(booking.ride_id);
+      } catch (e) {
+        console.error(e);
+      }
+
+      const card = document.getElementById("bookingCard");
+
+      const route = (ride ? `${ride.from_location} → ${ride.to_location}` : "Ride Route");
+      const time = (ride ? `${ride.date} · ${ride.time}` : "Time");
+      const driver = (booking.driver_name || "Driver");
+      const seats = booking.seats;
+      const fare = booking.fare_per_seat;
+      const total = seats * fare;
+
+      card.innerHTML = `
+        <div class="route">${route}</div>
+        <div class="meta">${time}</div>
+
+        <div class="info-grid">
+          <div>
+            <div class="info-label">Fare per seat</div>
+            <div class="info-value">৳${fare}</div>
+          </div>
+          <div>
+            <div class="info-label">Seats booked</div>
+            <div class="info-value">${seats}</div>
+          </div>
+          <div>
+            <div class="info-label">Total Amount</div>
+            <div class="info-value" style="color:#60a5fa;font-weight:700;">৳${total}</div>
+          </div>
+        </div>
+
+        <div class="driver">
+          <div class="avatar">${driver.charAt(0)}</div>
+          <div>
+            <div style="font-size:14px;">${driver}</div>
+            <div style="font-size:12px;color:#9ca3af;">Driver</div>
+          </div>
+        </div>
+
+        <div class="payment-methods">
+          <label>Select Payment Method:</label>
+          <div>
+            <input type="radio" name="payment_method" value="cash" id="cash" checked />
+            <label for="cash">Cash</label>
+          </div>
+          <div>
+            <input type="radio" name="payment_method" value="bkash" id="bkash" />
+            <label for="bkash">bKash</label>
+          </div>
+          <div>
+            <input type="radio" name="payment_method" value="digital" id="digital" />
+            <label for="digital">Visa / Mastercard</label>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-main" id="confirmPaymentBtn">Confirm & Pay</button>
+          <button class="btn-secondary" id="cancelBtn">Cancel</button>
+        </div>
+      `;
+
+      document.getElementById("cancelBtn").onclick = () => {
+        window.location.href = "home.html";
+      };
+
+      document.getElementById("confirmPaymentBtn").onclick = async () => {
+        const method = document.querySelector('input[name="payment_method"]:checked').value;
+        try {
+          await markBookingPaid({ bookingId: booking.id, method });
+
+          window.location.href = "payment.html";
+        } catch (e) {
+          alert("Payment failed: " + e.message);
+        }
+      };
+    });
+  </script>
 </body>
+
 </html>

@@ -1,137 +1,212 @@
-// app.js
-// Simple JSON "backend" using localStorage
+/* app.js — RideBuddy Backend Connected (Async/Await)
+   Converted from localStorage to PHP API
+*/
 
-const USERS_KEY = "rb_users";
-const CURRENT_USER_KEY = "rb_currentUser";
-const LOGGED_IN_KEY = "rb_isLoggedIn";
-
-// Helper: load all users
-function loadUsers() {
-  const raw = localStorage.getItem(USERS_KEY);
-  if (!raw) return [];
-  try {
-    return JSON.parse(raw);
-  } catch (e) {
-    console.error("Failed to parse users JSON", e);
-    return [];
-  }
-}
-
-// Helper: save users
-function saveUsers(users) {
-  localStorage.setItem(USERS_KEY, JSON.stringify(users));
-}
-
-// Register new user
-function registerUser({ name, email, role, password }) {
-  if (!name || !email || !role || !password) {
-    throw new Error("Please fill all fields.");
-  }
-
-  // IUB email check (very simple)
-  if (!email.endsWith("@iub.edu.bd")) {
-    throw new Error("Please use a valid IUB email (ends with @iub.edu.bd).");
-  }
-
-  const users = loadUsers();
-
-  // Unique email check
-  const exists = users.some((u) => u.email.toLowerCase() === email.toLowerCase());
-  if (exists) {
-    throw new Error("An account with this email already exists.");
-  }
-
-  const newUser = {
-    id: Date.now(),
-    name,
-    email,
-    role,
-    password, // (For real app: hash this!)
+(function () {
+  const API_BASE = "api";
+  const KEYS = {
+    SESSION: "rb_session_user",
+    SELECTED_RIDE_ID: "rb_selected_ride_id",
+    SELECTED_BOOKING_ID: "rb_selected_booking_id",
   };
 
-  users.push(newUser);
-  saveUsers(users);
+  async function apiCall(endpoint, method = "GET", body = null) {
+    const options = {
+      method,
+      headers: { "Content-Type": "application/json" },
+    };
+    if (body) options.body = JSON.stringify(body);
 
-  // Set current user / logged in
-  localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(newUser));
-  localStorage.setItem(LOGGED_IN_KEY, "true");
-
-  return newUser;
-}
-
-// Login user
-function loginUser({ email, password }) {
-  if (!email || !password) {
-    throw new Error("Please enter email and password.");
+    try {
+      const res = await fetch(`${API_BASE}/${endpoint}`, options);
+      const json = await res.json();
+      return json;
+    } catch (err) {
+      console.error("API Error:", err);
+      throw new Error("Network error or server unreachable");
+    }
   }
 
-  const users = loadUsers();
-  const user = users.find(
-    (u) =>
-      u.email.toLowerCase() === email.toLowerCase() &&
-      u.password === password
-  );
-
-  if (!user) {
-    throw new Error("Invalid email or password.");
+  function saveSession(user) {
+    if (user) localStorage.setItem(KEYS.SESSION, JSON.stringify(user));
+    else localStorage.removeItem(KEYS.SESSION);
   }
 
-  localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
-  localStorage.setItem(LOGGED_IN_KEY, "true");
-
-  return user;
-}
-
-// Get current logged-in user
-function getCurrentUser() {
-  const raw = localStorage.getItem(CURRENT_USER_KEY);
-  if (!raw) return null;
-  try {
-    return JSON.parse(raw);
-  } catch (e) {
-    console.error("Failed to parse current user", e);
-    return null;
+  function getSession() {
+    try { return JSON.parse(localStorage.getItem(KEYS.SESSION)); }
+    catch { return null; }
   }
-}
 
-// Check login status
-function isLoggedIn() {
-  return localStorage.getItem(LOGGED_IN_KEY) === "true";
-}
+  async function registerUser({ name, email, role, password }) {
+    const res = await apiCall("auth.php?action=register", "POST", { name, email, role, password });
+    if (res.status === "success") {
+      saveSession(res.user);
+      return res.user;
+    } else {
+      throw new Error(res.message);
+    }
+  }
 
-// Logout
-function logoutUser() {
-  localStorage.removeItem(LOGGED_IN_KEY);
-  localStorage.removeItem(CURRENT_USER_KEY);
-}
+  async function loginUser({ email, password }) {
+    const res = await apiCall("auth.php?action=login", "POST", { email, password });
+    if (res.status === "success") {
+      saveSession(res.user);
+      return res.user;
+    } else {
+      throw new Error(res.message);
+    }
+  }
 
-// Optional: seed some demo rides (if needed later)
-function seedDemoRidesOnce() {
-  if (localStorage.getItem("rb_demoSeeded")) return;
+  async function logoutUser() {
+    await apiCall("auth.php?action=logout", "POST");
+    saveSession(null);
+    window.location.href = "index.html";
+  }
 
-  const rides = [
-    {
-      id: 1,
-      from: "Bashundhara R/A",
-      to: "IUB North Gate",
-      time: "Tomorrow · 8:30 AM",
-      price: 50,
-      status: "Confirmed",
-      seatText: "Seat: 1 reserved · ৳50",
-    },
-    {
-      id: 2,
-      from: "Mirpur 10",
-      to: "IUB Main Gate",
-      time: "Thu · 9:00 AM",
-      price: 70,
-      status: "Pending",
-      seatText: "Seat: 1 reserved · ৳70",
-    },
-  ];
+  function isLoggedIn() {
+    return !!getSession();
+  }
 
-  localStorage.setItem("rb_rides", JSON.stringify(rides));
-  localStorage.setItem("rb_demoSeeded", "true");
-}
+  function getCurrentUser() {
+    return getSession();
+  }
 
-seedDemoRidesOnce();
+  async function getAllRides() {
+    return await apiCall("rides.php?action=getAll");
+  }
+
+  async function getRideById(id) {
+    return await apiCall(`rides.php?action=getById&id=${id}`);
+  }
+
+  async function addRide(rideObj) {
+    const res = await apiCall("rides.php?action=add", "POST", rideObj);
+    if (res.status === "success") {
+      return res.ride;
+    } else {
+      throw new Error(res.message);
+    }
+  }
+
+  async function updateRide(id, patch) {
+    const res = await apiCall(`rides.php?action=update&id=${id}`, "POST", patch);
+    if (res.status !== "success") throw new Error(res.message);
+  }
+
+  function setSelectedRideId(id) {
+    localStorage.setItem(KEYS.SELECTED_RIDE_ID, id);
+  }
+
+  function getSelectedRideId() {
+    return localStorage.getItem(KEYS.SELECTED_RIDE_ID);
+  }
+
+  function setSelectedRide(ride) {
+    localStorage.setItem("rb_selected_ride", JSON.stringify(ride));
+    if (ride && ride.id) setSelectedRideId(ride.id);
+  }
+
+  function getSelectedRide() {
+    try {
+      return JSON.parse(localStorage.getItem("rb_selected_ride"));
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async function createBooking({ rideId, seats }) {
+    const res = await apiCall("bookings.php?action=create", "POST", { rideId, seats });
+    if (res.status === "success") {
+      localStorage.setItem(KEYS.SELECTED_BOOKING_ID, res.booking.id);
+      return res.booking;
+    } else {
+      throw new Error(res.message);
+    }
+  }
+
+  async function getBookingById(bookingId) {
+    return await apiCall(`bookings.php?action=getById&id=${bookingId}`);
+  }
+
+  async function getUserBookings(userId) {
+    return await apiCall(`bookings.php?action=getByUser`);
+  }
+
+  async function markBookingPaid({ bookingId, method }) {
+    const res = await apiCall("bookings.php?action=pay", "POST", { bookingId, method });
+    if (res.status === "success") {
+      return res.booking;
+    } else {
+      throw new Error(res.message);
+    }
+  }
+
+  async function markBookingCompleted({ bookingId }) {
+    const res = await apiCall("bookings.php?action=complete", "POST", { bookingId });
+    if (res.status === "success") {
+      return res.booking;
+    }
+    throw new Error("Failed to complete");
+  }
+
+  function getSelectedBookingId() {
+    return localStorage.getItem(KEYS.SELECTED_BOOKING_ID);
+  }
+
+  function setSelectedBookingId(id) {
+    localStorage.setItem(KEYS.SELECTED_BOOKING_ID, id);
+  }
+
+  async function submitRating({ bookingId, stars }) {
+    const res = await apiCall("ratings.php?action=submit", "POST", { bookingId, stars });
+    if (res.status !== "success") throw new Error(res.message);
+  }
+
+  async function getRatingForBooking(bookingId) {
+    return await apiCall(`ratings.php?action=getByBooking&bookingId=${bookingId}`);
+  }
+
+  
+  async function getRideChat(rideId) {
+    return await apiCall(`chat.php?action=get&rideId=${rideId}`);
+  }
+
+  async function sendRideChatMessage(rideId, text) {
+    return await apiCall("chat.php?action=send", "POST", { rideId, text });
+  }
+
+
+  window.registerUser = registerUser;
+  window.loginUser = loginUser;
+  window.logoutUser = logoutUser;
+  window.isLoggedIn = isLoggedIn;
+  window.getCurrentUser = getCurrentUser;
+
+  window.getAllRides = getAllRides;
+  window.getRideById = getRideById;
+  window.addRide = addRide;
+  window.updateRide = updateRide;
+
+  window.setSelectedRideId = setSelectedRideId;
+  window.getSelectedRideId = getSelectedRideId;
+  window.setSelectedRide = setSelectedRide;
+  window.getSelectedRide = getSelectedRide;
+
+  window.createBooking = createBooking;
+  window.getBookingById = getBookingById;
+  window.getUserBookings = getUserBookings;
+  window.markBookingPaid = markBookingPaid;
+  window.markBookingCompleted = markBookingCompleted;
+
+  window.getSelectedBookingId = getSelectedBookingId;
+  window.setSelectedBookingId = setSelectedBookingId;
+
+  window.submitRating = submitRating;
+  window.getRatingForBooking = getRatingForBooking;
+
+  window.getRideChat = getRideChat;
+  window.sendRideChatMessage = sendRideChatMessage;
+
+  window.storeRideData = addRide;
+
+})();

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -121,7 +122,8 @@
       margin-bottom: 4px;
     }
 
-    .input, .select {
+    .input,
+    .select {
       width: 100%;
       border-radius: 10px;
       border: 1px solid rgba(148, 163, 184, 0.7);
@@ -223,12 +225,14 @@
       header {
         padding: 0 16px;
       }
+
       main {
         padding: 22px 16px 28px;
       }
     }
   </style>
 </head>
+
 <body>
   <header>
     <div class="brand">
@@ -249,30 +253,13 @@
 
       <form id="searchForm" action="#">
         <label for="from">From</label>
-        <input
-          id="from"
-          name="from"
-          class="input"
-          placeholder="e.g., Bashundhara R/A"
-          required
-        />
+        <input id="from" name="from" class="input" placeholder="e.g., Bashundhara R/A" required />
 
         <label for="to">To</label>
-        <input
-          id="to"
-          name="to"
-          class="input"
-          placeholder="e.g., IUB North Gate"
-          required
-        />
+        <input id="to" name="to" class="input" placeholder="e.g., IUB North Gate" required />
 
         <label for="datetime">Date &amp; time (optional)</label>
-        <input
-          id="datetime"
-          name="datetime"
-          type="datetime-local"
-          class="input"
-        />
+        <input id="datetime" name="datetime" type="datetime-local" class="input" />
 
         <label for="gender">Driver preference</label>
         <select id="gender" name="driver_pref" class="select">
@@ -297,16 +284,14 @@
 
   <script src="app.js"></script>
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      // Auth guard
+    document.addEventListener("DOMContentLoaded", async function () {
       if (!isLoggedIn()) {
         window.location.href = "login.html";
         return;
       }
 
-      // Logout
-      document.getElementById("logoutBtn").addEventListener("click", function () {
-        logoutUser();
+      document.getElementById("logoutBtn").addEventListener("click", async function () {
+        await logoutUser();
         window.location.href = "index.html";
       });
 
@@ -314,41 +299,38 @@
       const resultsEl = document.getElementById("results");
       const emptyStateEl = document.getElementById("emptyState");
 
-      function getAllRides() {
-        const raw = localStorage.getItem("rb_rides");
-        if (!raw) return [];
+      // getAllRides is imported from app.js and is async
+      // No local definition needed.
+
+      async function searchRides({ from, to, date }) {
         try {
-          return JSON.parse(raw);
+          const all = await getAllRides();
+
+          const fromLower = from.trim().toLowerCase();
+          const toLower = to.trim().toLowerCase();
+          const dateStr = date ? date.slice(0, 10) : "";
+
+          return all.filter((ride) => {
+            const rFrom = (ride.from_location || ride.from || "").toLowerCase();
+            const rTo = (ride.to_location || ride.to || "").toLowerCase();
+
+            const matchesFrom = !fromLower || rFrom.includes(fromLower);
+            const matchesTo = !toLower || rTo.includes(toLower);
+
+            let matchesDate = true;
+            if (dateStr) {
+              const rideDate = (ride.date || "").slice(0, 10);
+              if (rideDate) {
+                matchesDate = rideDate === dateStr;
+              }
+            }
+
+            return matchesFrom && matchesTo && matchesDate;
+          });
         } catch (e) {
-          console.error("Failed to parse rb_rides JSON", e);
+          console.error(e);
           return [];
         }
-      }
-
-      function searchRides({ from, to, date }) {
-        const all = getAllRides();
-
-        const fromLower = from.trim().toLowerCase();
-        const toLower = to.trim().toLowerCase();
-        const dateStr = date ? date.slice(0, 10) : "";
-
-        return all.filter((ride) => {
-          const rFrom = (ride.from_location || ride.from || "").toLowerCase();
-          const rTo = (ride.to_location || ride.to || "").toLowerCase();
-
-          const matchesFrom = !fromLower || rFrom.includes(fromLower);
-          const matchesTo = !toLower || rTo.includes(toLower);
-
-          let matchesDate = true;
-          if (dateStr) {
-            const rideDate = (ride.date || "").slice(0, 10);
-            if (rideDate) {
-              matchesDate = rideDate === dateStr;
-            }
-          }
-
-          return matchesFrom && matchesTo && matchesDate;
-        });
       }
 
       function formatWhen(ride) {
@@ -415,7 +397,8 @@
 
           item.addEventListener("click", function () {
             try {
-              localStorage.setItem("rb_selected_ride", JSON.stringify(ride));
+              // Use helper to store both object and ID
+              setSelectedRide(ride);
               window.location.href = "ride-details.html";
             } catch (e) {
               console.error("Failed to store selected ride", e);
@@ -427,19 +410,35 @@
         });
       }
 
-      // Initial: show all rides
-      renderRides(getAllRides());
+      // Initial load
+      (async function () {
+        try {
+          resultsEl.innerHTML = "<div style='padding:20px;text-align:center;color:#9ca3af'>Loading rides...</div>";
+          const all = await getAllRides();
+          renderRides(all);
+        } catch (e) {
+          console.error(e);
+          resultsEl.innerHTML = "<div style='padding:20px;text-align:center;color:#ef4444'>Failed to load rides. Please check connection.</div>";
+        }
+      })();
 
-      form.addEventListener("submit", function (e) {
+      form.addEventListener("submit", async function (e) {
         e.preventDefault();
         const from = document.getElementById("from").value;
         const to = document.getElementById("to").value;
         const datetime = document.getElementById("datetime").value;
 
-        const rides = searchRides({ from, to, date: datetime });
-        renderRides(rides);
+        try {
+          resultsEl.innerHTML = "<div style='padding:20px;text-align:center;color:#9ca3af'>Searching...</div>";
+          const rides = await searchRides({ from, to, date: datetime });
+          renderRides(rides);
+        } catch (e) {
+          console.error(e);
+          resultsEl.innerHTML = "<div style='padding:20px;text-align:center;color:#ef4444'>Search failed.</div>";
+        }
       });
     });
   </script>
 </body>
+
 </html>

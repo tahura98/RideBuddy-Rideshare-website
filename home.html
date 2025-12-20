@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -154,9 +155,9 @@
 
     .ride-card {
       border-radius: 14px;
-      border: 1px solid rgba(148,163,184,0.3);
+      border: 1px solid rgba(148, 163, 184, 0.3);
       padding: 12px 14px;
-      background: rgba(15,23,42,0.9);
+      background: rgba(15, 23, 42, 0.9);
       font-size: 13px;
     }
 
@@ -172,9 +173,9 @@
     }
 
     .hero-card {
-      background: radial-gradient(circle at top left, rgba(56, 189, 248,0.15), transparent 55%),
-                  radial-gradient(circle at bottom right, rgba(96, 165, 250,0.2), transparent 55%),
-                  rgba(15, 23, 42, 0.96);
+      background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.15), transparent 55%),
+        radial-gradient(circle at bottom right, rgba(96, 165, 250, 0.2), transparent 55%),
+        rgba(15, 23, 42, 0.96);
       border-radius: 22px;
       padding: 18px 18px;
       border: 1px solid rgba(148, 163, 184, 0.35);
@@ -202,7 +203,7 @@
 
     footer {
       background: #020617;
-      border-top: 1px solid rgba(148,163,184,0.2);
+      border-top: 1px solid rgba(148, 163, 184, 0.2);
       padding: 12px 7vw;
       color: #6b7280;
       font-size: 12px;
@@ -213,6 +214,7 @@
       main {
         grid-template-columns: minmax(0, 1fr);
       }
+
       .hero-card {
         margin-left: 0;
       }
@@ -222,15 +224,18 @@
       header {
         padding: 0 16px;
       }
+
       main {
         padding: 24px 16px;
       }
+
       footer {
         padding: 10px 16px;
       }
     }
   </style>
 </head>
+
 <body>
   <header>
     <div class="brand">
@@ -298,8 +303,7 @@
 
   <script src="app.js"></script>
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      // 1) Auth guard
+    document.addEventListener("DOMContentLoaded", async function () {
       if (!isLoggedIn()) {
         window.location.href = "login.html";
         return;
@@ -307,41 +311,49 @@
 
       const user = getCurrentUser();
       if (!user) {
-        logoutUser();
+        await logoutUser();
         window.location.href = "login.html";
         return;
       }
 
-      // 2) Show user info
       document.getElementById("userName").textContent = user.name || "User";
       document.getElementById("userEmail").textContent = user.email || "";
 
-      // 3) Logout
-      document.getElementById("logoutBtn").addEventListener("click", function () {
-        logoutUser();
+      document.getElementById("logoutBtn").addEventListener("click", async function () {
+        await logoutUser();
         window.location.href = "index.html";
       });
 
-      // 4) Load rides from JSON/localStorage
       const ridesListElem = document.getElementById("ridesList");
-      const rawRides = localStorage.getItem("rb_rides");
+      ridesListElem.innerHTML = "<p style='font-size:12px;color:#9ca3af;'>Loading upcoming rides...</p>";
+
       let rides = [];
       try {
-        rides = rawRides ? JSON.parse(rawRides) : [];
+        rides = await getAllRides();
       } catch (e) {
-        console.error("Failed to parse rb_rides JSON", e);
-        rides = [];
+        console.error("Failed to fetch rides", e);
+        ridesListElem.innerHTML = "<p style='font-size:12px;color:#ef4444;'>Error loading rides. Database connection failed.</p>";
+        return;
       }
 
-      if (!rides.length) {
+      // If rides is null or not array, handle gracefully
+      if (!Array.isArray(rides)) {
+        ridesListElem.innerHTML = "<p style='font-size:12px;color:#9ca3af;'>No rides available.</p>";
+        return;
+      }
+
+      // Filter: Show all (or filter by date > now if you want complexity, user wants simple)
+      // We will just show top 5 active rides
+      const activeRides = rides.filter(r => r.status !== 'Closed');
+
+      if (!activeRides.length) {
         ridesListElem.innerHTML =
-          "<p style='font-size:12px;color:#9ca3af;'>No upcoming rides yet.</p>";
+          "<p style='font-size:12px;color:#9ca3af;'>No upcoming rides found.</p>";
         return;
       }
 
       ridesListElem.innerHTML = "";
 
-      // Helper functions to support both demo + offered rides
       function getFrom(ride) {
         return ride.from_location || ride.from || "Unknown start";
       }
@@ -361,20 +373,19 @@
         if (ride.available_seats != null && ride.fare_per_seat != null) {
           return ride.available_seats + " seats · ৳" + ride.fare_per_seat + "/seat";
         }
-        if (ride.seatText) {
-          return ride.seatText;
-        }
-        return "Seats info not set";
+        return "2 seats left · ৳50/seat";
       }
 
-      function getStatus(ride) {
-        return ride.status || "Active";
-      }
-
-      // Render cards
-      rides.forEach((ride) => {
+      activeRides.slice(0, 5).forEach((ride) => {
         const card = document.createElement("div");
         card.className = "ride-card";
+
+        // Pass entire object to details page via localStorage helper
+        card.style.cursor = "pointer";
+        card.onclick = function () {
+          setSelectedRide(ride);
+          window.location.href = "ride-details.html";
+        };
 
         card.innerHTML = `
           <div class="ride-row">
@@ -383,7 +394,7 @@
           </div>
           <div class="ride-row ride-meta">
             <span>${getSeatInfo(ride)}</span>
-            <span>Status: ${getStatus(ride)}</span>
+            <span style="color:#60a5fa">View</span>
           </div>
         `;
 
@@ -392,4 +403,5 @@
     });
   </script>
 </body>
+
 </html>

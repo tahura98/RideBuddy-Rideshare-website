@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -128,7 +129,9 @@
       margin-bottom: 4px;
     }
 
-    .input, .select, textarea {
+    .input,
+    .select,
+    textarea {
       width: 100%;
       border-radius: 10px;
       border: 1px solid rgba(148, 163, 184, 0.7);
@@ -204,12 +207,14 @@
       header {
         padding: 0 16px;
       }
+
       main {
         padding: 22px 16px 28px;
       }
     }
   </style>
 </head>
+
 <body>
   <header>
     <div class="brand">
@@ -231,22 +236,10 @@
 
         <form id="offerForm" action="#">
           <label for="from">From</label>
-          <input
-            id="from"
-            name="from_location"
-            class="input"
-            placeholder="e.g., Bashundhara R/A"
-            required
-          />
+          <input id="from" name="from_location" class="input" placeholder="e.g., Bashundhara R/A" required />
 
           <label for="to">To</label>
-          <input
-            id="to"
-            name="to_location"
-            class="input"
-            placeholder="e.g., IUB North Gate"
-            required
-          />
+          <input id="to" name="to_location" class="input" placeholder="e.g., IUB North Gate" required />
 
           <div class="row-2">
             <div>
@@ -262,29 +255,13 @@
           <div class="row-2">
             <div>
               <label for="seats">Available seats</label>
-              <input
-                id="seats"
-                name="available_seats"
-                type="number"
-                min="1"
-                max="4"
-                class="input"
-                placeholder="e.g., 2"
-                required
-              />
+              <input id="seats" name="available_seats" type="number" min="1" max="4" class="input" placeholder="e.g., 2"
+                required />
             </div>
             <div>
               <label for="fare">Fare per seat (৳)</label>
-              <input
-                id="fare"
-                name="fare_per_seat"
-                type="number"
-                min="0"
-                step="1"
-                class="input"
-                placeholder="e.g., 50"
-                required
-              />
+              <input id="fare" name="fare_per_seat" type="number" min="0" step="1" class="input" placeholder="e.g., 50"
+                required />
             </div>
           </div>
 
@@ -296,13 +273,8 @@
           </select>
 
           <label for="note">Optional note to riders</label>
-          <textarea
-            id="note"
-            name="note"
-            class="input"
-            style="min-height: 80px; resize: vertical;"
-            placeholder="e.g., Will stop near Rampura bridge if needed."
-          ></textarea>
+          <textarea id="note" name="note" class="input" style="min-height: 80px; resize: vertical;"
+            placeholder="e.g., Will stop near Rampura bridge if needed."></textarea>
 
           <button type="submit" class="btn-primary">Post ride</button>
         </form>
@@ -322,78 +294,47 @@
 
   <footer>RideBuddy – For IUB community rides only.</footer>
 
-  <script src="app.js"></script>
+  <script src="app.js">
+
+  </script>
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      // Auth guard
-      if (!isLoggedIn()) {
-        window.location.href = "login.html";
-        return;
-      }
+    document.addEventListener('DOMContentLoaded', function () {
+      const form = document.getElementById('offerForm');
 
-      const user = getCurrentUser();
-      if (!user) {
-        logoutUser();
-        window.location.href = "login.html";
-        return;
-      }
-
-      // Logout
-      document.getElementById("logoutBtn").addEventListener("click", function () {
-        logoutUser();
-        window.location.href = "index.html";
-      });
-
-      const form = document.getElementById("offerForm");
-
-      function createRide(ride) {
-        const raw = localStorage.getItem("rb_rides");
-        let rides = [];
-        if (raw) {
-          try {
-            rides = JSON.parse(raw);
-          } catch (e) {
-            console.error("Failed to parse rb_rides JSON", e);
-            rides = [];
-          }
-        }
-        ride.id = Date.now();
-        rides.push(ride);
-        localStorage.setItem("rb_rides", JSON.stringify(rides));
-      }
-
-      form.addEventListener("submit", function (e) {
+      form.addEventListener('submit', async function (e) {
         e.preventDefault();
 
-        const ride = {
-          driver_id: user.id,
-          driver_name: user.name,
-          from_location: document.getElementById("from").value.trim(),
-          to_location: document.getElementById("to").value.trim(),
-          date: document.getElementById("date").value,
-          time: document.getElementById("time").value,
-          available_seats: parseInt(document.getElementById("seats").value, 10),
-          fare_per_seat: parseInt(document.getElementById("fare").value, 10),
-          passenger_preference: document.getElementById("genderPref").value,
-          note: document.getElementById("note").value.trim(),
-          status: "Active"
-        };
-
-        if (!ride.from_location || !ride.to_location) {
-          alert("Please fill all required fields.");
+        const user = getCurrentUser();
+        if (!user) {
+          alert("Please login first");
+          window.location.href = "login.html";
           return;
         }
 
+        const ride = {
+          driver_id: user.id,
+          from_location: document.getElementById('from').value,
+          to_location: document.getElementById('to').value,
+          date: document.getElementById('date').value,
+          time: document.getElementById('time').value,
+          available_seats: parseInt(document.getElementById('seats').value),
+          fare_per_seat: parseInt(document.getElementById('fare').value),
+          passenger_preference: document.getElementById('genderPref').value,
+          note: document.getElementById('note').value,
+        };
+
         try {
-          createRide(ride);
-          alert("Ride posted successfully!");
-          window.location.href = "home.html";
+          await addRide(ride);
+          alert('Ride offered successfully!');
+          window.location.href = 'home.html';
         } catch (err) {
           console.error(err);
-          alert("Something went wrong while saving your ride.");
+          alert("Error: " + err.message);
         }
       });
     });
   </script>
+
 </body>
+
 </html>

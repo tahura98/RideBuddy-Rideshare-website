@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -21,7 +22,7 @@
       background: rgba(15, 23, 42, 0.95);
       border-radius: 18px;
       padding: 24px 22px;
-      border: 1px solid rgba(148,163,184,0.35);
+      border: 1px solid rgba(148, 163, 184, 0.35);
       width: 100%;
       max-width: 400px;
       box-shadow: 0 25px 60px rgba(15, 23, 42, 0.95);
@@ -39,6 +40,8 @@
 
     .stars span {
       cursor: pointer;
+      color: #e5e7eb;
+      transition: color 0.1s;
     }
 
     .btn-main {
@@ -50,41 +53,129 @@
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .btn-main:hover {
+      opacity: 0.9;
+    }
+
+    .btn-main:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
 
     footer {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      text-align: center;
       font-size: 11px;
-      padding: 12px 7vw 16px;
+      padding: 12px 0 16px;
       color: #6b7280;
       border-top: 1px solid rgba(15, 23, 42, 0.8);
+      background: #020617;
     }
   </style>
 </head>
+
 <body>
   <div class="card">
     <h1>Rate Your Ride</h1>
-    <p>How was your ride with Rahat?</p>
+    <p id="ratingPrompt">How was your ride?</p>
     <div class="stars">
-      <span onclick="rateRide(1)">★</span>
-      <span onclick="rateRide(2)">★</span>
-      <span onclick="rateRide(3)">★</span>
-      <span onclick="rateRide(4)">★</span>
-      <span onclick="rateRide(5)">★</span>
+      <span data-val="1">★</span>
+      <span data-val="2">★</span>
+      <span data-val="3">★</span>
+      <span data-val="4">★</span>
+      <span data-val="5">★</span>
     </div>
-    <button class="btn-main" onclick="submitRating()">Submit Rating</button>
+    <button class="btn-main" id="submitBtn">Submit Rating</button>
   </div>
   <footer>RideBuddy – Rate your Ride</footer>
 
+  <script src="app.js"></script>
   <script>
-    function rateRide(stars) {
-      console.log('Rating:', stars);
-      // Store the rating or send it to the backend
-    }
+    document.addEventListener("DOMContentLoaded", async function () {
+      if (!isLoggedIn()) { window.location.href = "login.html"; return; }
 
-    function submitRating() {
-      alert('Thank you for your feedback!');
-      window.location.href = 'home.html'; // Redirect to home page
-    }
+      const user = getCurrentUser();
+      const params = new URLSearchParams(window.location.search);
+      const bookingId = params.get("bookingId");
+
+      if (!bookingId) {
+        alert("No booking selected.");
+        window.location.href = "ride-history.html"; 
+        return;
+      }
+
+      let booking = null;
+      try {
+        booking = await getBookingById(bookingId);
+      } catch (e) {
+        console.error("Booking fetch error:", e);
+      }
+
+      if (!booking) {
+        alert("Booking not found or invalid id.");
+        return;
+      }
+
+      const from = booking.from_location || "Start";
+      const to = booking.to_location || "Dest";
+      const driver = booking.driver_name || "Driver";
+
+      const pTag = document.getElementById("ratingPrompt");
+      if (pTag) pTag.textContent = `How was your ride with ${driver}? (${from} to ${to})`;
+
+      let selectedStars = 0;
+      const starEls = document.querySelectorAll(".stars span");
+
+      function paint() {
+        starEls.forEach((el, idx) => {
+          if ((idx + 1) <= selectedStars) {
+            el.style.color = "#fbbf24"; 
+            el.innerText = "★";
+          } else {
+            el.style.color = "#4b5563"; 
+            el.innerText = "★";
+          }
+        });
+      }
+
+      starEls.forEach((el) => {
+        el.addEventListener("click", () => {
+          selectedStars = parseInt(el.getAttribute("data-val"));
+          paint();
+        });
+      });
+
+      paint();
+
+      const btn = document.getElementById("submitBtn");
+      btn.addEventListener("click", async () => {
+        if (!selectedStars) {
+          alert("Please click on the stars to select a rating first.");
+          return;
+        }
+
+        btn.textContent = "Submitting...";
+        btn.disabled = true;
+
+        try {
+          await submitRating({ bookingId, stars: selectedStars });
+          alert("Thanks! Rating submitted successfully.");
+          window.location.href = "ride-history.html"; 
+        } catch (e) {
+          console.error(e);
+          alert("Error: " + (e.message || "Failed to submit rating"));
+          btn.textContent = "Submit Rating";
+          btn.disabled = false;
+        }
+      });
+    });
   </script>
 </body>
+
 </html>
