@@ -269,7 +269,6 @@
       <div style="margin-top:18px;">
         <div class="section-title">Upcoming rides</div>
         <div class="rides-list" id="ridesList">
-          <!-- Rides will be loaded from localStorage JSON (rb_rides) -->
         </div>
       </div>
     </section>
@@ -336,14 +335,11 @@
         return;
       }
 
-      // If rides is null or not array, handle gracefully
       if (!Array.isArray(rides)) {
         ridesListElem.innerHTML = "<p style='font-size:12px;color:#9ca3af;'>No rides available.</p>";
         return;
       }
 
-      // Filter: Show all (or filter by date > now if you want complexity, user wants simple)
-      // We will just show top 5 active rides
       const activeRides = rides.filter(r => r.status !== 'Closed');
 
       if (!activeRides.length) {
@@ -380,7 +376,6 @@
         const card = document.createElement("div");
         card.className = "ride-card";
 
-        // Pass entire object to details page via localStorage helper
         card.style.cursor = "pointer";
         card.onclick = function () {
           setSelectedRide(ride);

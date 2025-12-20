@@ -7,16 +7,35 @@ header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Content-Type: application/json; charset=UTF-8");
 
-$host = '127.0.0.1';
-$user = 'root';
-$pass = ''; 
-$db   = 'ridebuddy_db';
+
+$whitelist = array('127.0.0.1', '::1', 'localhost');
+
+if(in_array($_SERVER['REMOTE_ADDR'], $whitelist)){
+    $host = '127.0.0.1';
+    $user = 'root';
+    $pass = ''; 
+    $db   = 'ridebuddy_db';
+} else {
+    // Production / InfinityFree Configuration
+    $host = 'sql303.infinityfree.com'; 
+    $user = 'if0_40727472';            
+    $pass = 'p2aGX4aXQ8';     
+    // IMPORTANT: I assumed you named the DB 'ridebuddy' in the panel. 
+    // If you named it something else, change 'ridebuddy' below to that name.
+    $db   = 'if0_40727472_ridebuddy';  
+}
 
 $conn = new mysqli($host, $user, $pass, $db);
 
 if ($conn->connect_error) {
-    http_response_code(500);
-    echo json_encode(['status' => 'error', 'message' => 'Database connection failed']);
-    exit;
+    // Show detailed error only on localhost for debugging
+    if(in_array($_SERVER['REMOTE_ADDR'], $whitelist)){
+        die("Connection failed: " . $conn->connect_error);
+    } else {
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'message' => 'Database connection failed. Check your config.']);
+        exit;
+    }
 }
+
 

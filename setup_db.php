@@ -1,7 +1,7 @@
 <?php
 $host = '127.0.0.1';
 $user = 'root';
-$pass = ''; // Default XAMPP password
+$pass = ''; 
 
 // Create connection
 $conn = new mysqli($host, $user, $pass);

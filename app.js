@@ -19,11 +19,28 @@
 
     try {
       const res = await fetch(`${API_BASE}/${endpoint}`, options);
+
+      // Check if we got JSON
+      const contentType = res.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        // Received HTML or text? PHP is probably not working.
+        const text = await res.text();
+        console.warn("API returned non-JSON:", text.substring(0, 100)); // Debug log
+        throw new Error("CRITICAL: PHP is not running. You must open this site via XAMPP Localhost (http://localhost/Ridebuddy), not VS Code Live Server or Netlify.");
+      }
+
       const json = await res.json();
       return json;
     } catch (err) {
       console.error("API Error:", err);
-      throw new Error("Network error or server unreachable");
+      // Show the logical error if available, otherwise show the network error.
+      // This helps debug Issues on InfinityFree vs Localhost.
+      const errorMsg = err.message || "Unknown error";
+      if (errorMsg.includes("CRITICAL")) {
+        throw new Error(errorMsg);
+      } else {
+        throw new Error("Connection Error: " + errorMsg + "\n\nPossible causes:\n1. api/db.php has wrong credentials.\n2. You haven't uploaded the 'api' folder.\n3. The database server is down.");
+      }
     }
   }
 
@@ -166,7 +183,7 @@
     return await apiCall(`ratings.php?action=getByBooking&bookingId=${bookingId}`);
   }
 
-  
+
   async function getRideChat(rideId) {
     return await apiCall(`chat.php?action=get&rideId=${rideId}`);
   }

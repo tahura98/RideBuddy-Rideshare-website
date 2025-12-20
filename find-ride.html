@@ -299,8 +299,6 @@
       const resultsEl = document.getElementById("results");
       const emptyStateEl = document.getElementById("emptyState");
 
-      // getAllRides is imported from app.js and is async
-      // No local definition needed.
 
       async function searchRides({ from, to, date }) {
         try {
@@ -397,7 +395,6 @@
 
           item.addEventListener("click", function () {
             try {
-              // Use helper to store both object and ID
               setSelectedRide(ride);
               window.location.href = "ride-details.html";
             } catch (e) {
@@ -410,7 +407,6 @@
         });
       }
 
-      // Initial load
       (async function () {
         try {
           resultsEl.innerHTML = "<div style='padding:20px;text-align:center;color:#9ca3af'>Loading rides...</div>";
