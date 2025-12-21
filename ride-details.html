@@ -273,6 +273,11 @@
       const currentUser = getCurrentUser();
       if (!currentUser) { await logoutUser(); window.location.href = "login.html"; return; }
 
+      if (currentUser.role === 'admin') {
+        window.location.href = "admin.html";
+        return;
+      }
+
       document.getElementById("logoutBtn").addEventListener("click", async function () {
         await logoutUser();
         window.location.href = "index.html";
@@ -380,7 +385,7 @@
         closeBtn.onclick = async () => {
           try {
             await updateRide(freshRide.id, { status: "Closed" });
-            freshRide.status = "Closed"; 
+            freshRide.status = "Closed";
             setSelectedRide(freshRide);
 
             statusBadgeEl.textContent = "Closed";

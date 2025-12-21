@@ -132,13 +132,18 @@
   </main>
 
   <footer>RideBuddy – Ride History</footer>
-  
+
   <script src="app.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", async function () {
       if (!isLoggedIn()) { window.location.href = "login.html"; return; }
       const user = getCurrentUser();
       if (!user) { await logoutUser(); window.location.href = "login.html"; return; }
+
+      if (user.role === 'admin') {
+        window.location.href = "admin.html";
+        return;
+      }
 
       const wrap = document.getElementById("rideHistory");
       if (!wrap) return;
@@ -186,7 +191,7 @@
       `;
 
         card.querySelector('[data-action="chat"]').onclick = async () => {
-      
+
           try {
             const ride = await getRideById(bk.ride_id);
             if (ride) {
@@ -204,7 +209,7 @@
         const rateBtn = card.querySelector('[data-action="rate"]');
         if (rateBtn) {
           rateBtn.onclick = () => {
-         
+
             window.location.href = "ride-rating.html?bookingId=" + encodeURIComponent(bk.id);
           };
         }

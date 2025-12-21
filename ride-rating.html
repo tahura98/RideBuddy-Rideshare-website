@@ -101,12 +101,17 @@
       if (!isLoggedIn()) { window.location.href = "login.html"; return; }
 
       const user = getCurrentUser();
+      if (user && user.role === 'admin') {
+        window.location.href = "admin.html";
+        return;
+      }
+
       const params = new URLSearchParams(window.location.search);
       const bookingId = params.get("bookingId");
 
       if (!bookingId) {
         alert("No booking selected.");
-        window.location.href = "ride-history.html"; 
+        window.location.href = "ride-history.html";
         return;
       }
 
@@ -135,10 +140,10 @@
       function paint() {
         starEls.forEach((el, idx) => {
           if ((idx + 1) <= selectedStars) {
-            el.style.color = "#fbbf24"; 
+            el.style.color = "#fbbf24";
             el.innerText = "★";
           } else {
-            el.style.color = "#4b5563"; 
+            el.style.color = "#4b5563";
             el.innerText = "★";
           }
         });
@@ -166,7 +171,7 @@
         try {
           await submitRating({ bookingId, stars: selectedStars });
           alert("Thanks! Rating submitted successfully.");
-          window.location.href = "ride-history.html"; 
+          window.location.href = "ride-history.html";
         } catch (e) {
           console.error(e);
           alert("Error: " + (e.message || "Failed to submit rating"));

@@ -282,6 +282,12 @@
         return;
       }
 
+      // Redirect admin to admin panel
+      if (user.role === 'admin') {
+        window.location.href = "admin.html";
+        return;
+      }
+
       document.getElementById("logoutBtn").addEventListener("click", async function () {
         await logoutUser();
         window.location.href = "index.html";

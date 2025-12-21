@@ -33,14 +33,19 @@
       return json;
     } catch (err) {
       console.error("API Error:", err);
-      // Show the logical error if available, otherwise show the network error.
-      // This helps debug Issues on InfinityFree vs Localhost.
+
       const errorMsg = err.message || "Unknown error";
+
       if (errorMsg.includes("CRITICAL")) {
         throw new Error(errorMsg);
-      } else {
-        throw new Error("Connection Error: " + errorMsg + "\n\nPossible causes:\n1. api/db.php has wrong credentials.\n2. You haven't uploaded the 'api' folder.\n3. The database server is down.");
       }
+
+      // Check if this looks like a network error (e.g. server down)
+      if (err instanceof TypeError && errorMsg.includes("fetch")) {
+        throw new Error("Connection Error: Server is unreachable.\n\nLikely cause: Apache is not running in XAMPP.\n\nSolution: Open XAMPP Control Panel and click 'Start' next to Apache.");
+      }
+
+      throw new Error("API Connection Error: " + errorMsg + "\n\nTroubleshooting:\n1. Ensure Apache & MySQL are RUNNING in XAMPP.\n2. Ensure you are using http://localhost/Ridebuddy/\n3. Ensure you have run setup_db.php.");
     }
   }
 
@@ -68,9 +73,6 @@
     const res = await apiCall("auth.php?action=login", "POST", { email, password });
     if (res.status === "success") {
       saveSession(res.user);
-      if (res.user.role === 'admin') {
-        window.location.href = 'admin.html';
-      }
       return res.user;
     } else {
       throw new Error(res.message);

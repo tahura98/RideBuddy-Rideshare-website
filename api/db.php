@@ -8,9 +8,17 @@ header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Content-Type: application/json; charset=UTF-8");
 
 
-$whitelist = array('127.0.0.1', '::1', 'localhost');
+$whitelist = array('127.0.0.1', '::1', 'localhost', '192.168.', '10.0.', '172.16.');
 
-if(in_array($_SERVER['REMOTE_ADDR'], $whitelist)){
+$is_local = false;
+foreach ($whitelist as $ip_part) {
+    if (strpos($_SERVER['REMOTE_ADDR'], $ip_part) === 0) {
+        $is_local = true;
+        break;
+    }
+}
+
+if ($is_local) {
     $host = '127.0.0.1';
     $user = 'root';
     $pass = ''; 
@@ -25,12 +33,17 @@ if(in_array($_SERVER['REMOTE_ADDR'], $whitelist)){
     $db   = 'if0_40727472_ridebuddy';  
 }
 
-$conn = new mysqli($host, $user, $pass, $db);
+$conn = @new mysqli($host, $user, $pass);
 
 if ($conn->connect_error) {
     http_response_code(500);
-    // Return the specific error so the frontend can show "Access Denied" or "Unknown Database"
-    echo json_encode(['status' => 'error', 'message' => "Database Connection Failed: " . $conn->connect_error]);
+    echo json_encode(['status' => 'error', 'message' => "Database Server Connection Failed: " . $conn->connect_error . "\n\nIs MySQL started in XAMPP?"]);
+    exit;
+}
+
+if (!$conn->select_db($db)) {
+    http_response_code(500);
+    echo json_encode(['status' => 'error', 'message' => "Database '$db' not found.\n\nYou must run http://localhost/Ridebuddy/setup_db.php once to create the database."]);
     exit;
 }
 

@@ -68,6 +68,17 @@
   <footer>RideBuddy – Payment Confirmation</footer>
 
   <script src="app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      if (isLoggedIn()) {
+        const user = getCurrentUser();
+        if (user && user.role === 'admin') {
+          window.location.href = "admin.html";
+          return;
+        }
+      }
+    });
+  </script>
 </body>
 
 </html>

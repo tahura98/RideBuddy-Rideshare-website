@@ -298,7 +298,29 @@
 
   </script>
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', async function () {
+      if (!isLoggedIn()) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      const user = getCurrentUser();
+      if (!user) {
+        await logoutUser();
+        window.location.href = "login.html";
+        return;
+      }
+
+      if (user.role === 'admin') {
+        window.location.href = "admin.html";
+        return;
+      }
+
+      document.getElementById("logoutBtn").addEventListener("click", async function () {
+        await logoutUser();
+        window.location.href = "index.html";
+      });
+
       const form = document.getElementById('offerForm');
 
       form.addEventListener('submit', async function (e) {
