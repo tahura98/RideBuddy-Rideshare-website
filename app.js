@@ -68,6 +68,9 @@
     const res = await apiCall("auth.php?action=login", "POST", { email, password });
     if (res.status === "success") {
       saveSession(res.user);
+      if (res.user.role === 'admin') {
+        window.location.href = 'admin.html';
+      }
       return res.user;
     } else {
       throw new Error(res.message);
@@ -225,5 +228,35 @@
   window.sendRideChatMessage = sendRideChatMessage;
 
   window.storeRideData = addRide;
+
+  // --- ADMIN FUNCTIONS ---
+  async function getAdminStats() {
+    const user = getCurrentUser();
+    return await apiCall(`admin.php?action=getDashboardStats&admin_id=${user ? user.id : 0}`);
+  }
+  async function getAdminUsers() {
+    const user = getCurrentUser();
+    return await apiCall(`admin.php?action=getAllUsers&admin_id=${user ? user.id : 0}`);
+  }
+  async function adminDeleteUser(targetId) {
+    const user = getCurrentUser();
+    const res = await apiCall(`admin.php?action=deleteUser&admin_id=${user ? user.id : 0}`, "POST", { target_id: targetId });
+    if (res.status !== 'success') throw new Error(res.message);
+  }
+  async function getAdminRides() {
+    const user = getCurrentUser();
+    return await apiCall(`admin.php?action=getAllRides&admin_id=${user ? user.id : 0}`);
+  }
+  async function adminDeleteRide(targetId) {
+    const user = getCurrentUser();
+    const res = await apiCall(`admin.php?action=deleteRide&admin_id=${user ? user.id : 0}`, "POST", { target_id: targetId });
+    if (res.status !== 'success') throw new Error(res.message);
+  }
+
+  window.getAdminStats = getAdminStats;
+  window.getAdminUsers = getAdminUsers;
+  window.adminDeleteUser = adminDeleteUser;
+  window.getAdminRides = getAdminRides;
+  window.adminDeleteRide = adminDeleteRide;
 
 })();

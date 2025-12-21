@@ -28,14 +28,10 @@ if(in_array($_SERVER['REMOTE_ADDR'], $whitelist)){
 $conn = new mysqli($host, $user, $pass, $db);
 
 if ($conn->connect_error) {
-    // Show detailed error only on localhost for debugging
-    if(in_array($_SERVER['REMOTE_ADDR'], $whitelist)){
-        die("Connection failed: " . $conn->connect_error);
-    } else {
-        http_response_code(500);
-        echo json_encode(['status' => 'error', 'message' => 'Database connection failed. Check your config.']);
-        exit;
-    }
+    http_response_code(500);
+    // Return the specific error so the frontend can show "Access Denied" or "Unknown Database"
+    echo json_encode(['status' => 'error', 'message' => "Database Connection Failed: " . $conn->connect_error]);
+    exit;
 }
 
 
